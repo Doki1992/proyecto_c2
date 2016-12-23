@@ -1,0 +1,12 @@
+#include "produccion_declarador_1.h"
+#include "visitor.h"
+produccion_declarador_1::produccion_declarador_1(QString iden)
+{
+    this->iden=iden;
+
+}
+
+QString produccion_declarador_1::accept(visitor *v){
+    return v->visit_declarador_1(this);
+}
+

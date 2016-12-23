@@ -1,0 +1,31 @@
+	publico Lienzo petalosjj¿
+
+
+	Conservar  entero pet [] (entero x, entero y)¿
+	var entero arreglo arr [a+b+(a+(5+1)*5)]={{1,2},{2,3}}$
+	var entero hola = 23$
+
+	?
+
+	Conservar  entero peta (entero x, entero y)¿
+	var entero hola = 23$
+
+	?
+
+	entero petas (entero x, entero y,entero b [])¿
+	var entero hola = 23$
+
+	?
+
+	petase (entero x, entero y)¿
+	var entero hola, uno, dos $
+	.petase(x,y)$
+	var entero dsf=.pte(3)+.pdsf(21,212,12,12,12)$
+	?
+
+	principal()¿
+		.petase(2,3)$
+	?
+
+	?
+

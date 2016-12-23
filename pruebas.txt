@@ -1,0 +1,41 @@
+Lienzo casa ¿
+    hola="hola"++$
+var boolean hola =121*3232+ "Holdsafasdjfka" + 12.323$
+si (hola<hfla)¿
+   hola="hola"++$
+?sino¿
+   hola="hola"++$
+?
+mientras (hola<hfla)¿
+   hola="hola"++$
+?
+hacer¿
+   hola="hola"++$
+?mientras(a<b)$
+
+comprobar(variable+2)
+¿ caso valor:
+var boolean hola =121*3232+ "Holdsafasdjfka" + 12.323$
+caso valor:
+ var boolean hola =121*3232+ "Holdsafasdjfka" + 12.323$
+caso valor+232:
+var boolean hola =121*3232+ "Holdsafasdjfka" + 12.323$
+
+?
+var entero ii$
+para (ie=0;ia<10;ss=e+1)¿
+var entero i$
+?
+Ordenar(hDdfdsfS,"hol")$
+Sumarizar(hola)$
+Pintar_OR(10,12,"hol",1*21,323,'s')$
+Pintar_S(10,12,"hol","JLJk")$
+Pintar_P(10,12,"hol",1*21)$
+
+Principal()¿
+
+Pintar_S(10,12,"hol","JLJk")$
+Pintar_P(10,12,"hol",1*21)$
+
+?
+    ?
