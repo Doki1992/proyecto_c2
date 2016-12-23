@@ -18,12 +18,11 @@ public:
     QString tipo;
     QString id;
     produccion_lista_parametros*lista_parametros;
-    produccion_lista_instrucciones*instrucciones;
     QLinkedList<simbolo*> * parametros;
     QString vector ="";
     QString conservar;
 
-    declaracion_metodo(produccion_declaracion_metodo*metodo,QString visibilida,QString valor,QString tipo,QString id,produccion_lista_parametros*lista,tabla_simbolos*ts,QString conservar,produccion_lista_instrucciones*instruccioens);
+    declaracion_metodo(produccion_declaracion_metodo*metodo,QString visibilida,QString valor,QString tipo,QString id,produccion_lista_parametros*lista,tabla_simbolos*ts,QString conservar);
     virtual QString getId();
 };
 

@@ -1,7 +1,8 @@
 #include "produccion_parametro1.h"
 #include"visitor.h"
-produccion_parametro1::produccion_parametro1(produccion_tipo *pt, declarador *id)
+produccion_parametro1::produccion_parametro1(produccion_tipo *pt, declarador *id, QString fila)
 {
+    this->fila=fila;
     this->pt=pt;
     this->id=id;
 }

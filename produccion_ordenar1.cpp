@@ -1,7 +1,8 @@
 #include "produccion_ordenar1.h"
 #include"visitor.h"
-produccion_ordenar1::produccion_ordenar1(QString iden, QString cadena)
+produccion_ordenar1::produccion_ordenar1(QString iden, QString cadena,QString fila)
 {
+    this->fila=fila;
     this->iden=iden;
     this->cadena=cadena;
 }

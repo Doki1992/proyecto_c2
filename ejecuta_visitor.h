@@ -4,35 +4,14 @@
 #include"tabla_simbolos.h"
 #include"QHash"
 #include<QString>
-#include "declaracion_metodo.h"
-#include "lienzo.h"
-#include "heredados.h"
+#include<QGraphicsItem>
 class ejecuta_visitor:public visitor
 {
 public:
-    ejecuta_visitor(tabla_simbolos*ts, QLinkedList<simbolo *> *ambitos);
+    ejecuta_visitor(tabla_simbolos*ts,QLinkedList<tabla_simbolos*>*ambitos);
     tabla_simbolos*ts;
-    QLinkedList<simbolo*>*ambitos;
-    void copia_ambito(tabla_simbolos*padre,tabla_simbolos*hijo);
-    simbolo* get_ambito_padre(QLinkedList<simbolo *> *ambitos);
-    QString asigna_parametros(QLinkedList<simbolo*>*parametros,QStringList lista);
-    declaracion_metodo*get_metodos_sobre_cargados(tabla_simbolos*ts,QString id, int count,lienzo*padre);
-    QString I_need_identifer="no";
-    QString es_llamada = "no";
-    tabla_simbolos* get_tabla_temporal();
-    void copia_parametros(tabla_simbolos*ts,QLinkedList<simbolo*>*parametros);
-    QLinkedList<heredados*>*lista;
-    QLinkedList<heredados*>*homonimos=new QLinkedList<heredados*>();
-    QLinkedList<heredados*>*homonimos_var=new QLinkedList<heredados*>();
-    bool existe(QString nombre, lienzo*l);
-    void cargar_homonimos(QString nombre);
-    int contar_consevar(QLinkedList<heredados*>*homonimos);
-
-
-
-
-
-
+    QLinkedList<tabla_simbolos*>*ambitos;
+    QLinkedList<QGraphicsItem *> *rect_local;
     virtual QString visit_pintar_s11(produccion_pintar_s11*pd) ;
     virtual QString visit_pintar_or1(produccion_pintar_or1*pd) ;
     virtual QString visit_pintar_p1(produccion_pintar_p1*pd) ;
@@ -96,6 +75,7 @@ public:
     virtual QString visit_expresion_menor(expresion_menor*e);
     virtual QString visit_expresion_menorq(expresion_menoq*e);
     virtual QString visit_expresion_not(expresion_not*e);
+    virtual QString visit_expresion_nulo(expresion_nulo*e);
     virtual QString visit_expresion_parentesis(expresion_parentesis*e);
     virtual QString visit_expresion_potencia(expresion_potencia*e);
     virtual QString visit_expresion_mas(expresion_mas*e);
@@ -146,7 +126,6 @@ public:
     virtual QString visit_expresion_vector(expresion_vector*pd) ;
     virtual QString visit_lista_expresion1(produccion_lista_expresion1*pd);
     virtual QString visit_lista_expresion2(produccion_lista_expresion2*pd);
-    virtual QString visit_expresion_llamada(expresion_llamada_metodo*pd) ;
 };
 
 #endif // EJECUTA_VISITOR_H

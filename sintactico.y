@@ -10,7 +10,6 @@
 
 //----------------------------------INCLUSION DE HEADERS DE LAS CLASES-----------------------------
 #include "expresion_diferente.h"
-#include "expresion_llamada_metodo.h"
 #include "expresion_vector.h"
 #include "expresion_y.h"
 #include "expresion_epsilon.h"
@@ -121,6 +120,8 @@
 #include"produccion_declaracion_metodo4.h"
 #include"produccion_lista_expresion1.h"
 #include"produccion_lista_expresion2.h"
+#include"token_error.h"
+#include<QLinkedList>
 //---------------------------FIN DE INCLUSION DE HEADERS---------------------------------
 //----------------------------INCLUIR LAS CLASES PADRES---------------------------------
 
@@ -133,14 +134,23 @@ extern int yylineno; //linea actual donde se encuentra el parser (analisis lexic
 extern int linea;
 extern int columna; //columna actual donde se encuentra el parser (analisis lexico) lo maneja BISON
 extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo maneja BISON
+QLinkedList<token_error*>*error=new QLinkedList<token_error*>();
 nodo *raiz;
 int yyerror(const char* mens){
 //metodo que se llama al haber un error sintactico
 //SE IMPRIME EN CONSOLA EL ERROR
+token_error*t=new token_error(yytext,QString::number(linea),QString(columna),"error sintactico",mens);
+error->append(t);
 std::cout <<mens<<" "<<yytext<<linea<<columna<<std::endl;
 return 0;
 }
+QLinkedList<token_error*> *lista_errores_s(){
+    return error;
+};
 
+void asigna_lista(QLinkedList<token_error*> *lista){
+    error=lista;
+}
 QTextEdit* salida; //puntero al QTextEdit de salida
 void setSalida(QTextEdit* sal) {
 //metodo que asigna el valor al QTextEdit de salida
@@ -304,7 +314,7 @@ lista_corchetes*lc;
 //%right Not
 %left Or Xor Nor
 %left And Nand
-%left Not
+%left Not esnulo
 %left igual diferente
 %left mayor menor mayorq menorq
 %left masmas menosmenos
@@ -316,82 +326,81 @@ lista_corchetes*lc;
 %%
 START:INI{raiz=$1;};
 
-INI: INI LIENZO{$$=new produccion_ini1($1,$2);}
-    |LIENZO{$$=new produccion_ini2($1);};
+INI: INI LIENZO{$$=new produccion_ini1($1,$2,QString::number(linea));}
+    |LIENZO{$$=new produccion_ini2($1,QString::number(linea));};
 
-LIENZO : lienzo iden abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo1($2,$4);}	//sin extens y sin visibilidad
-|VISIBILIDAD lienzo iden abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo2($1,$3,$5);}	//sin extens
-|lienzo iden EXTIENDE abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo3($2,$3,$5);}	//sin visibilidad
-|VISIBILIDAD lienzo iden EXTIENDE abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo4($1,$3,$4,$6);}
-|DECLARACION_VARIABLE{$$=new produccion_lienzo5($1);}
-|LISTA_ASIGNACION{$$=new produccion_lienzo6($1);};
-
-
-
-VISIBILIDAD: publico{$$=new produccion_visibilidad1($1);}
-|privado{$$=new produccion_visibilidad2($1);}
-|protegido{$$=new produccion_visibilidad3($1);};
-
-EXTIENDE: extiende LISTA_NOMBRE{$$=new produccion_extiende1($2);} ;
-
-LISTA_NOMBRE: LISTA_NOMBRE coma DECLARADOR{$$=new produccion_lista_nombre1($1,$3);}
-|DECLARADOR{$$=new produccion_lista_nombre2($1);};
-
-DECLARADOR: iden {$$ = new produccion_declarador_1($1);}
-|iden LISTA_CORCHETES {$$ = new produccion_declarador_2($1, $2);}
+LIENZO : lienzo iden abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo1($2,$4,QString::number(linea));}	//sin extens y sin visibilidad
+|VISIBILIDAD lienzo iden abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo2($1,$3,$5,QString::number(linea));}	//sin extens
+|lienzo iden EXTIENDE abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo3($2,$3,$5,QString::number(linea));}	//sin visibilidad
+|VISIBILIDAD lienzo iden EXTIENDE abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_lienzo4($1,$3,$4,$6,QString::number(linea));}
+|DECLARACION_VARIABLE{$$=new produccion_lienzo5($1,QString::number(linea));}
+|LISTA_ASIGNACION{$$=new produccion_lienzo6($1,QString::number(linea));};
 
 
-LISTA_CORCHETES: LISTA_CORCHETES acorch EXPRESION ccorch {$$= new produccion_lista_corchetes_1($1,$3);}
-                 |acorch EXPRESION ccorch {$$= new produccion_lista_corchete_2($2);}
 
-LISTA_INSTRUCCIONES: LISTA_INSTRUCCIONES INSTRUCCION{$$=new produccion_lista_instrucciones1($1,$2);}
-|INSTRUCCION{$$=new produccion_lista_instrucciones2($1);};
+VISIBILIDAD: publico{$$=new produccion_visibilidad1($1,QString::number(linea));}
+|privado{$$=new produccion_visibilidad2($1,QString::number(linea));}
+|protegido{$$=new produccion_visibilidad3($1,QString::number(linea));};
 
-INSTRUCCION: DECLARACION_VARIABLE fin_sentencia{$$=new produccion_instruccion1($1);}
-|DECLARACION_METODO{$$=new produccion_instruccion2($1);}
-|LISTA_ASIGNACION fin_sentencia{$$=new produccion_instruccion3($1);}
-|CICLOS{$$=new produccion_instruccion4($1);}
-|PINTAR_OR{$$=new produccion_instruccion5($1);}
-|PINTAR_P{$$=new produccion_instruccion6($1);}
+EXTIENDE: extiende LISTA_NOMBRE{$$=new produccion_extiende1($2,QString::number(linea));} ;
+
+LISTA_NOMBRE: LISTA_NOMBRE coma DECLARADOR{$$=new produccion_lista_nombre1($1,$3,QString::number(linea));}
+|DECLARADOR{$$=new produccion_lista_nombre2($1,QString::number(linea));};
+
+DECLARADOR: iden {$$ = new produccion_declarador_1($1,QString::number(linea));}
+|iden LISTA_CORCHETES {$$ = new produccion_declarador_2($1, $2,QString::number(linea));}
+
+
+LISTA_CORCHETES: LISTA_CORCHETES acorch EXPRESION ccorch {$$= new produccion_lista_corchetes_1($1,$3,QString::number(linea));}
+                 |acorch EXPRESION ccorch {$$= new produccion_lista_corchete_2($2,QString::number(linea));}
+
+LISTA_INSTRUCCIONES: LISTA_INSTRUCCIONES INSTRUCCION{$$=new produccion_lista_instrucciones1($1,$2,QString::number(linea));}
+|INSTRUCCION{$$=new produccion_lista_instrucciones2($1,QString::number(linea));};
+
+INSTRUCCION: DECLARACION_VARIABLE fin_sentencia{$$=new produccion_instruccion1($1,QString::number(linea));}
+|DECLARACION_METODO{$$=new produccion_instruccion2($1,QString::number(linea));}
+|LISTA_ASIGNACION fin_sentencia{$$=new produccion_instruccion3($1,QString::number(linea));}
+|CICLOS{$$=new produccion_instruccion4($1,QString::number(linea));}
+|PINTAR_OR{$$=new produccion_instruccion5($1,QString::number(linea));}
+|PINTAR_P{$$=new produccion_instruccion6($1,QString::number(linea));}
 |PINTAR_S{} // esto no sirve
-|SUMARIZAR{$$=new produccion_instruccion8($1);}
-|ORDENAR{$$=new produccion_instruccion9($1);}
-|continuar fin_sentencia{$$=new produccion_instruccion10($1);}
-|salir fin_sentencia{$$=new produccion_instruccion11($1);}
-|retorna EXPRESION fin_sentencia{$$=new produccion_instruccion12($2);}
-|PRINCIPAL{$$=new produccion_instruccion13($1);}
-|punto iden aparen LISTA_EXPRESION cparen fin_sentencia{$$=new produccion_instruccion14($2,$4);}
+|SUMARIZAR{$$=new produccion_instruccion8($1,QString::number(linea));}
+|ORDENAR{$$=new produccion_instruccion9($1,QString::number(linea));}
+|continuar fin_sentencia{$$=new produccion_instruccion10($1,QString::number(linea));}
+|salir fin_sentencia{$$=new produccion_instruccion11($1,QString::number(linea));}
+|retorna EXPRESION fin_sentencia{$$=new produccion_instruccion12($2,QString::number(linea));}
+|PRINCIPAL{$$=new produccion_instruccion13($1,QString::number(linea));}
+|punto iden aparen LISTA_EXPRESION cparen fin_sentencia{$$=new produccion_instruccion14($2,$4,QString::number(linea));}
 
-LISTA_EXPRESION: LISTA_EXPRESION coma EXPRESION{$$=new produccion_lista_expresion1($1,$3);}
-                 |EXPRESION{$$=new produccion_lista_expresion2($1);}
-
-
-
-
-DECLARACION_VARIABLE:conservar var TIPO LISTA_NOMBRE{$$=new produccion_declaracion_variable1($3,$4);}
-|conservar var TIPO LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable2($3,$4,$5);}
-|var TIPO LISTA_NOMBRE{$$=new produccion_declaracion_variable3($2,$3);}
-|var TIPO LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable4($2,$3,$4);}
-|var TIPO arreglo LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable5($2,$4,$5);}
-|var TIPO arreglo LISTA_NOMBRE{$$=new produccion_declaracion_variable6($2,$4);}
-|conservar var TIPO arreglo LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable7($1,$3,$5,$6);}
-|conservar var TIPO arreglo LISTA_NOMBRE{$$=new produccion_declaracion_variable_8($1,$3,$5);}
-
-TIPO: boolean{$$=new produccion_tipo1($1);}
-|entero{$$=new produccion_tipo2($1);}
-|cadena{$$=new produccion_tipo3($1);}
-|Char{$$=new produccion_tipo4($1);}
-|doble{$$=new produccion_tipo5($1);};
+LISTA_EXPRESION: LISTA_EXPRESION coma EXPRESION{$$=new produccion_lista_expresion1($1,$3,QString::number(linea));}
+                 |EXPRESION{$$=new produccion_lista_expresion2($1,QString::number(linea));}
 
 
 
-ASIGNACION: igual EXPRESION coma LISTA_ASIGNACION{$$=new produccion_asignacion1($2,$4);}
-|igual EXPRESION{$$=new produccion_asignacion2($2);};
+DECLARACION_VARIABLE:conservar var TIPO LISTA_NOMBRE{$$=new produccion_declaracion_variable1($3,$4,QString::number(linea));}
+|conservar var TIPO LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable2($3,$4,$5,QString::number(linea));}
+|var TIPO LISTA_NOMBRE{$$=new produccion_declaracion_variable3($2,$3,QString::number(linea));}
+|var TIPO LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable4($2,$3,$4,QString::number(linea));}
+|var TIPO arreglo LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable5($2,$4,$5,QString::number(linea));}
+|var TIPO arreglo LISTA_NOMBRE{$$=new produccion_declaracion_variable6($2,$4,QString::number(linea));}
+|conservar var TIPO arreglo LISTA_NOMBRE ASIGNACION{$$=new produccion_declaracion_variable7($1,$3,$5,$6,QString::number(linea));}
+|conservar var TIPO arreglo LISTA_NOMBRE{$$=new produccion_declaracion_variable_8($1,$3,$5,QString::number(linea));}
 
-LISTA_ASIGNACION:LISTA_ASIGNACION coma iden igual EXPRESION{$$=new produccion_lista_asignacion1($1,$3,$5);}
-|DECLARADOR igual EXPRESION{$$=new produccion_lista_asignacion2($1,$3);}
-|iden masigual EXPRESION{$$=new produccion_lista_asignacion3($1,$3);}
-|iden menosigual EXPRESION{$$=new produccion_lista_asignacion4($1,$3);};
+TIPO: boolean{$$=new produccion_tipo1($1,QString::number(linea));}
+|entero{$$=new produccion_tipo2($1,QString::number(linea));}
+|cadena{$$=new produccion_tipo3($1,QString::number(linea));}
+|Char{$$=new produccion_tipo4($1,QString::number(linea));}
+|doble{$$=new produccion_tipo5($1,QString::number(linea));};
+
+
+
+ASIGNACION: igual EXPRESION coma LISTA_ASIGNACION{$$=new produccion_asignacion1($2,$4,QString::number(linea));}
+|igual EXPRESION{$$=new produccion_asignacion2($2,QString::number(linea));};
+
+LISTA_ASIGNACION:LISTA_ASIGNACION coma iden igual EXPRESION{$$=new produccion_lista_asignacion1($1,$3,$5,QString::number(linea));}
+|DECLARADOR igual EXPRESION{$$=new produccion_lista_asignacion2($1,$3,QString::number(linea));}
+|iden masigual EXPRESION{$$=new produccion_lista_asignacion3($1,$3,QString::number(linea));}
+|iden menosigual EXPRESION{$$=new produccion_lista_asignacion4($1,$3,QString::number(linea));};
 
 EXPRESION :EXPRESION igualigual EXPRESION{$$=new Expresion_igual($1,$3);}
                 |EXPRESION diferente EXPRESION{$$=new expresion_diferente($1,$3);}
@@ -423,41 +432,41 @@ EXPRESION :EXPRESION igualigual EXPRESION{$$=new Expresion_igual($1,$3);}
                 |TRUE{$$=new expresion_true($1);}
                 |FALSE{$$=new expresion_false($1);}
                 |{$$ = new expresion_epsilon();}
-                |allave LISTA_EXPRESION cllave{$$ = new expresion_vector($2);}
-                |punto iden aparen LISTA_EXPRESION cparen{$$ = new expresion_llamada_metodo($2,$4);}
+                |allave LISTA_EXPRESION cllave{$$=new expresion_vector($2);}
+                |punto iden aparen LISTA_EXPRESION cparen
 
 
-CICLOS : si aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo sino abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos1($3,$6,$10);}
-        |si aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos2($3,$6);}
-        |mientras aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos3($3,$6);}
-        |para aparen LISTA_ASIGNACION pcoma EXPRESION pcoma LISTA_ASIGNACION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos4($3,$5,$7,$10);}
-        |hacer abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo mientras aparen EXPRESION cparen fin_sentencia{$$=new produccion_ciclos5($3,$7);}
-        |comprobar aparen EXPRESION cparen abre_lienzo LISTA_CASE cierra_lienzo{$$=new produccion_ciclos6($3,$6);};
+CICLOS : si aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo sino abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos1($3,$6,$10,QString::number(linea));}
+        |si aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos2($3,$6,QString::number(linea));}
+        |mientras aparen EXPRESION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos3($3,$6,QString::number(linea));}
+        |para aparen LISTA_ASIGNACION pcoma EXPRESION pcoma LISTA_ASIGNACION cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_ciclos4($3,$5,$7,$10,QString::number(linea));}
+        |hacer abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo mientras aparen EXPRESION cparen fin_sentencia{$$=new produccion_ciclos5($3,$7,QString::number(linea));}
+        |comprobar aparen EXPRESION cparen abre_lienzo LISTA_CASE cierra_lienzo{$$=new produccion_ciclos6($3,$6,QString::number(linea));};
 
-LISTA_CASE : LISTA_CASE caso EXPRESION dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case1($1,$3,$5);}
-        |caso EXPRESION dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case2($2,$4);}
-        |defecto dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case3($3);};
+LISTA_CASE : LISTA_CASE caso EXPRESION dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case1($1,$3,$5,QString::number(linea));}
+        |caso EXPRESION dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case2($2,$4,QString::number(linea));}
+        |defecto dosp LISTA_INSTRUCCIONES{$$=new produccion_lista_case3($3,QString::number(linea));};
 
-DECLARACION_METODO: conservar TIPO DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo1($2,$3,$5,$8);}
-|TIPO DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo2($1,$2,$4,$7);}
-|conservar DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo3($2,$4,$7);}
-|DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo4($1,$3,$6);}
-
-
+DECLARACION_METODO: conservar TIPO DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo1($2,$3,$5,$8,QString::number(linea));}
+|TIPO DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo2($1,$2,$4,$7,QString::number(linea));}
+|conservar DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo3($2,$4,$7,QString::number(linea));}
+|DECLARADOR aparen LISTA_PARAMETROS cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_declaracion_metodo4($1,$3,$6,QString::number(linea));}
 
 
-LISTA_PARAMETROS:LISTA_PARAMETROS coma PARAMETRO{$$=new produccion_lista_parametros1($1,$3);}
-|PARAMETRO{$$=new produccion_lista_parametros2($1);}
+
+
+LISTA_PARAMETROS:LISTA_PARAMETROS coma PARAMETRO{$$=new produccion_lista_parametros1($1,$3,QString::number(linea));}
+|PARAMETRO{$$=new produccion_lista_parametros2($1,QString::number(linea));}
 |{$$=new produccion_lista_parametros3();};
 
-PARAMETRO: TIPO DECLARADOR{$$=new produccion_parametro1($1,$2);}
+PARAMETRO: TIPO DECLARADOR{$$=new produccion_parametro1($1,$2,QString::number(linea));}
 
 
-PINTAR_P: pintarp aparen EXPRESION coma EXPRESION coma cadenacomillas coma EXPRESION cparen fin_sentencia{$$=new produccion_pintar_p1($3,$5,$7,$9);};
-PINTAR_OR: pintaror aparen EXPRESION coma EXPRESION coma cadenacomillas coma EXPRESION coma EXPRESION coma EXPRESION cparen fin_sentencia{$$=new produccion_pintar_or1($3,$5,$7,$9,$11,$13);};
+PINTAR_P: pintarp aparen EXPRESION coma EXPRESION coma cadenacomillas coma EXPRESION cparen fin_sentencia{$$=new produccion_pintar_p1($3,$5,$7,$9,QString::number(linea));};
+PINTAR_OR: pintaror aparen EXPRESION coma EXPRESION coma cadenacomillas coma EXPRESION coma EXPRESION coma EXPRESION cparen fin_sentencia{$$=new produccion_pintar_or1($3,$5,$7,$9,$11,$13,QString::number(linea));};
 PINTAR_S: pintars aparen EXPRESION coma EXPRESION coma EXPRESION coma EXPRESION  cparen fin_sentencia;
 
-PRINCIPAL:principal aparen cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_principal1($5);};
-ORDENAR: ordenar aparen iden coma cadenacomillas cparen fin_sentencia{$$=new produccion_ordenar1($3,$5);};
-SUMARIZAR: sumarizar aparen iden cparen fin_sentencia{$$=new produccion_sumarizar1($3);};
+PRINCIPAL:principal aparen cparen abre_lienzo LISTA_INSTRUCCIONES cierra_lienzo{$$=new produccion_principal1($5,QString::number(linea));};
+ORDENAR: ordenar aparen iden coma cadenacomillas cparen fin_sentencia{$$=new produccion_ordenar1($3,$5,QString::number(linea));};
+SUMARIZAR: sumarizar aparen iden cparen fin_sentencia{$$=new produccion_sumarizar1($3,QString::number(linea));};
 %%

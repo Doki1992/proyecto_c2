@@ -2,7 +2,6 @@
 #define VISITOR_H
 #include<QString>
 #include "expresion_diferente.h"
-#include "expresion_llamada_metodo.h"
 #include "expresion_vector.h"
 #include "expresion_y.h"
 #include "expresion_igual.h"
@@ -39,6 +38,7 @@
 #include "expresion_menor.h"
 #include "expresion_menoq.h"
 #include "expresion_not.h"
+#include "expresion_nulo.h"
 #include "expresion_xor.h"
 #include "expresion_nand.h"
 #include"produccion_ordenar1.h"
@@ -192,6 +192,7 @@ class visitor{
         virtual QString visit_expresion_decimal(expresion_decimal*e)=0;
         virtual QString visit_expresion_true(expresion_true*e)=0;
         virtual QString visit_expresion_false(expresion_false*e)=0;
+        virtual QString visit_expresion_nulo(expresion_nulo*e)=0;
         virtual QString visit_expresion_cadenacomillas(expresion_cadenacomillas*e)=0;
 
         virtual QString visit_ciclos1(produccion_ciclos1*pd) =0;
@@ -224,7 +225,6 @@ class visitor{
         virtual QString visit_expresion_vector(expresion_vector*pd) =0;
         virtual QString visit_lista_expresion1(produccion_lista_expresion1*pd) =0;
         virtual QString visit_lista_expresion2(produccion_lista_expresion2*pd) =0;
-        virtual QString visit_expresion_llamada(expresion_llamada_metodo*pd) =0;
 };
 
 #endif // VISITOR_H

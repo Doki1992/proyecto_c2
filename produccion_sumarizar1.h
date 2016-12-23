@@ -6,7 +6,8 @@ class produccion_sumarizar1:public produccion_sumarizar
 {
 public:
     QString iden;
-    produccion_sumarizar1(QString iden);
+    QString fila;
+    produccion_sumarizar1(QString iden,QString fila);
     virtual QString accept(visitor *v);
 };
 

@@ -5,8 +5,9 @@
 class produccion_lienzo6:public produccion_lienzo
 {
 public:
+    QString fila;
     produccion_lista_asignacion*pl;
-    produccion_lienzo6(produccion_lista_asignacion*pl);
+    produccion_lienzo6(produccion_lista_asignacion*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 

@@ -75,7 +75,6 @@
 
 //----------------------------------INCLUSION DE HEADERS DE LAS CLASES-----------------------------
 #include "expresion_diferente.h"
-#include "expresion_llamada_metodo.h"
 #include "expresion_vector.h"
 #include "expresion_y.h"
 #include "expresion_epsilon.h"
@@ -186,6 +185,8 @@
 #include"produccion_declaracion_metodo4.h"
 #include"produccion_lista_expresion1.h"
 #include"produccion_lista_expresion2.h"
+#include"token_error.h"
+#include<QLinkedList>
 //---------------------------FIN DE INCLUSION DE HEADERS---------------------------------
 //----------------------------INCLUIR LAS CLASES PADRES---------------------------------
 
@@ -198,14 +199,23 @@ extern int yylineno; //linea actual donde se encuentra el parser (analisis lexic
 extern int linea;
 extern int columna; //columna actual donde se encuentra el parser (analisis lexico) lo maneja BISON
 extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo maneja BISON
+QLinkedList<token_error*>*error=new QLinkedList<token_error*>();
 nodo *raiz;
 int yyerror(const char* mens){
 //metodo que se llama al haber un error sintactico
 //SE IMPRIME EN CONSOLA EL ERROR
+token_error*t=new token_error(yytext,QString::number(linea),QString(columna),"error sintactico",mens);
+error->append(t);
 std::cout <<mens<<" "<<yytext<<linea<<columna<<std::endl;
 return 0;
 }
+QLinkedList<token_error*> *lista_errores_s(){
+    return error;
+};
 
+void asigna_lista(QLinkedList<token_error*> *lista){
+    error=lista;
+}
 QTextEdit* salida; //puntero al QTextEdit de salida
 void setSalida(QTextEdit* sal) {
 //metodo que asigna el valor al QTextEdit de salida
@@ -693,18 +703,18 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   317,   317,   319,   320,   322,   323,   324,   325,   326,
-     327,   331,   332,   333,   335,   337,   338,   340,   341,   344,
-     345,   347,   348,   350,   351,   352,   353,   354,   355,   356,
-     357,   358,   359,   360,   361,   362,   363,   365,   366,   371,
-     372,   373,   374,   375,   376,   377,   378,   380,   381,   382,
-     383,   384,   388,   389,   391,   392,   393,   394,   396,   397,
-     398,   399,   400,   401,   402,   403,   404,   405,   406,   407,
-     408,   409,   410,   411,   412,   413,   414,   415,   416,   417,
-     418,   419,   420,   421,   422,   423,   424,   425,   426,   427,
-     430,   431,   432,   433,   434,   435,   437,   438,   439,   441,
-     442,   443,   444,   449,   450,   451,   453,   456,   457,   458,
-     460,   461,   462
+       0,   327,   327,   329,   330,   332,   333,   334,   335,   336,
+     337,   341,   342,   343,   345,   347,   348,   350,   351,   354,
+     355,   357,   358,   360,   361,   362,   363,   364,   365,   366,
+     367,   368,   369,   370,   371,   372,   373,   375,   376,   380,
+     381,   382,   383,   384,   385,   386,   387,   389,   390,   391,
+     392,   393,   397,   398,   400,   401,   402,   403,   405,   406,
+     407,   408,   409,   410,   411,   412,   413,   414,   415,   416,
+     417,   418,   419,   420,   421,   422,   423,   424,   425,   426,
+     427,   428,   429,   430,   431,   432,   433,   434,   435,   436,
+     439,   440,   441,   442,   443,   444,   446,   447,   448,   450,
+     451,   452,   453,   458,   459,   460,   462,   465,   466,   467,
+     469,   470,   471
 };
 #endif
 
@@ -1975,157 +1985,157 @@ yyreduce:
 
   case 3:
 
-    {(yyval.pi)=new produccion_ini1((yyvsp[-1].pi),(yyvsp[0].pl));}
+    {(yyval.pi)=new produccion_ini1((yyvsp[-1].pi),(yyvsp[0].pl),QString::number(linea));}
 
     break;
 
   case 4:
 
-    {(yyval.pi)=new produccion_ini2((yyvsp[0].pl));}
+    {(yyval.pi)=new produccion_ini2((yyvsp[0].pl),QString::number(linea));}
 
     break;
 
   case 5:
 
-    {(yyval.pl)=new produccion_lienzo1((yyvsp[-3].TEXT),(yyvsp[-1].pli));}
+    {(yyval.pl)=new produccion_lienzo1((yyvsp[-3].TEXT),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 6:
 
-    {(yyval.pl)=new produccion_lienzo2((yyvsp[-5].pv),(yyvsp[-3].TEXT),(yyvsp[-1].pli));}
+    {(yyval.pl)=new produccion_lienzo2((yyvsp[-5].pv),(yyvsp[-3].TEXT),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 7:
 
-    {(yyval.pl)=new produccion_lienzo3((yyvsp[-4].TEXT),(yyvsp[-3].pe),(yyvsp[-1].pli));}
+    {(yyval.pl)=new produccion_lienzo3((yyvsp[-4].TEXT),(yyvsp[-3].pe),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 8:
 
-    {(yyval.pl)=new produccion_lienzo4((yyvsp[-6].pv),(yyvsp[-4].TEXT),(yyvsp[-3].pe),(yyvsp[-1].pli));}
+    {(yyval.pl)=new produccion_lienzo4((yyvsp[-6].pv),(yyvsp[-4].TEXT),(yyvsp[-3].pe),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 9:
 
-    {(yyval.pl)=new produccion_lienzo5((yyvsp[0].pdv));}
+    {(yyval.pl)=new produccion_lienzo5((yyvsp[0].pdv),QString::number(linea));}
 
     break;
 
   case 10:
 
-    {(yyval.pl)=new produccion_lienzo6((yyvsp[0].pla));}
+    {(yyval.pl)=new produccion_lienzo6((yyvsp[0].pla),QString::number(linea));}
 
     break;
 
   case 11:
 
-    {(yyval.pv)=new produccion_visibilidad1((yyvsp[0].TEXT));}
+    {(yyval.pv)=new produccion_visibilidad1((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 12:
 
-    {(yyval.pv)=new produccion_visibilidad2((yyvsp[0].TEXT));}
+    {(yyval.pv)=new produccion_visibilidad2((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 13:
 
-    {(yyval.pv)=new produccion_visibilidad3((yyvsp[0].TEXT));}
+    {(yyval.pv)=new produccion_visibilidad3((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 14:
 
-    {(yyval.pe)=new produccion_extiende1((yyvsp[0].pln));}
+    {(yyval.pe)=new produccion_extiende1((yyvsp[0].pln),QString::number(linea));}
 
     break;
 
   case 15:
 
-    {(yyval.pln)=new produccion_lista_nombre1((yyvsp[-2].pln),(yyvsp[0].dec));}
+    {(yyval.pln)=new produccion_lista_nombre1((yyvsp[-2].pln),(yyvsp[0].dec),QString::number(linea));}
 
     break;
 
   case 16:
 
-    {(yyval.pln)=new produccion_lista_nombre2((yyvsp[0].dec));}
+    {(yyval.pln)=new produccion_lista_nombre2((yyvsp[0].dec),QString::number(linea));}
 
     break;
 
   case 17:
 
-    {(yyval.dec) = new produccion_declarador_1((yyvsp[0].TEXT));}
+    {(yyval.dec) = new produccion_declarador_1((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 18:
 
-    {(yyval.dec) = new produccion_declarador_2((yyvsp[-1].TEXT), (yyvsp[0].lc));}
+    {(yyval.dec) = new produccion_declarador_2((yyvsp[-1].TEXT), (yyvsp[0].lc),QString::number(linea));}
 
     break;
 
   case 19:
 
-    {(yyval.lc)= new produccion_lista_corchetes_1((yyvsp[-3].lc),(yyvsp[-1].pexp));}
+    {(yyval.lc)= new produccion_lista_corchetes_1((yyvsp[-3].lc),(yyvsp[-1].pexp),QString::number(linea));}
 
     break;
 
   case 20:
 
-    {(yyval.lc)= new produccion_lista_corchete_2((yyvsp[-1].pexp));}
+    {(yyval.lc)= new produccion_lista_corchete_2((yyvsp[-1].pexp),QString::number(linea));}
 
     break;
 
   case 21:
 
-    {(yyval.pli)=new produccion_lista_instrucciones1((yyvsp[-1].pli),(yyvsp[0].pins));}
+    {(yyval.pli)=new produccion_lista_instrucciones1((yyvsp[-1].pli),(yyvsp[0].pins),QString::number(linea));}
 
     break;
 
   case 22:
 
-    {(yyval.pli)=new produccion_lista_instrucciones2((yyvsp[0].pins));}
+    {(yyval.pli)=new produccion_lista_instrucciones2((yyvsp[0].pins),QString::number(linea));}
 
     break;
 
   case 23:
 
-    {(yyval.pins)=new produccion_instruccion1((yyvsp[-1].pdv));}
+    {(yyval.pins)=new produccion_instruccion1((yyvsp[-1].pdv),QString::number(linea));}
 
     break;
 
   case 24:
 
-    {(yyval.pins)=new produccion_instruccion2((yyvsp[0].pdm));}
+    {(yyval.pins)=new produccion_instruccion2((yyvsp[0].pdm),QString::number(linea));}
 
     break;
 
   case 25:
 
-    {(yyval.pins)=new produccion_instruccion3((yyvsp[-1].pla));}
+    {(yyval.pins)=new produccion_instruccion3((yyvsp[-1].pla),QString::number(linea));}
 
     break;
 
   case 26:
 
-    {(yyval.pins)=new produccion_instruccion4((yyvsp[0].pc));}
+    {(yyval.pins)=new produccion_instruccion4((yyvsp[0].pc),QString::number(linea));}
 
     break;
 
   case 27:
 
-    {(yyval.pins)=new produccion_instruccion5((yyvsp[0].por));}
+    {(yyval.pins)=new produccion_instruccion5((yyvsp[0].por),QString::number(linea));}
 
     break;
 
   case 28:
 
-    {(yyval.pins)=new produccion_instruccion6((yyvsp[0].pintar));}
+    {(yyval.pins)=new produccion_instruccion6((yyvsp[0].pintar),QString::number(linea));}
 
     break;
 
@@ -2137,169 +2147,169 @@ yyreduce:
 
   case 30:
 
-    {(yyval.pins)=new produccion_instruccion8((yyvsp[0].ps));}
+    {(yyval.pins)=new produccion_instruccion8((yyvsp[0].ps),QString::number(linea));}
 
     break;
 
   case 31:
 
-    {(yyval.pins)=new produccion_instruccion9((yyvsp[0].po));}
+    {(yyval.pins)=new produccion_instruccion9((yyvsp[0].po),QString::number(linea));}
 
     break;
 
   case 32:
 
-    {(yyval.pins)=new produccion_instruccion10((yyvsp[-1].TEXT));}
+    {(yyval.pins)=new produccion_instruccion10((yyvsp[-1].TEXT),QString::number(linea));}
 
     break;
 
   case 33:
 
-    {(yyval.pins)=new produccion_instruccion11((yyvsp[-1].TEXT));}
+    {(yyval.pins)=new produccion_instruccion11((yyvsp[-1].TEXT),QString::number(linea));}
 
     break;
 
   case 34:
 
-    {(yyval.pins)=new produccion_instruccion12((yyvsp[-1].pexp));}
+    {(yyval.pins)=new produccion_instruccion12((yyvsp[-1].pexp),QString::number(linea));}
 
     break;
 
   case 35:
 
-    {(yyval.pins)=new produccion_instruccion13((yyvsp[0].prin));}
+    {(yyval.pins)=new produccion_instruccion13((yyvsp[0].prin),QString::number(linea));}
 
     break;
 
   case 36:
 
-    {(yyval.pins)=new produccion_instruccion14((yyvsp[-4].TEXT),(yyvsp[-2].prlc));}
+    {(yyval.pins)=new produccion_instruccion14((yyvsp[-4].TEXT),(yyvsp[-2].prlc),QString::number(linea));}
 
     break;
 
   case 37:
 
-    {(yyval.prlc)=new produccion_lista_expresion1((yyvsp[-2].prlc),(yyvsp[0].pexp));}
+    {(yyval.prlc)=new produccion_lista_expresion1((yyvsp[-2].prlc),(yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 38:
 
-    {(yyval.prlc)=new produccion_lista_expresion2((yyvsp[0].pexp));}
+    {(yyval.prlc)=new produccion_lista_expresion2((yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 39:
 
-    {(yyval.pdv)=new produccion_declaracion_variable1((yyvsp[-1].pt),(yyvsp[0].pln));}
+    {(yyval.pdv)=new produccion_declaracion_variable1((yyvsp[-1].pt),(yyvsp[0].pln),QString::number(linea));}
 
     break;
 
   case 40:
 
-    {(yyval.pdv)=new produccion_declaracion_variable2((yyvsp[-2].pt),(yyvsp[-1].pln),(yyvsp[0].pa));}
+    {(yyval.pdv)=new produccion_declaracion_variable2((yyvsp[-2].pt),(yyvsp[-1].pln),(yyvsp[0].pa),QString::number(linea));}
 
     break;
 
   case 41:
 
-    {(yyval.pdv)=new produccion_declaracion_variable3((yyvsp[-1].pt),(yyvsp[0].pln));}
+    {(yyval.pdv)=new produccion_declaracion_variable3((yyvsp[-1].pt),(yyvsp[0].pln),QString::number(linea));}
 
     break;
 
   case 42:
 
-    {(yyval.pdv)=new produccion_declaracion_variable4((yyvsp[-2].pt),(yyvsp[-1].pln),(yyvsp[0].pa));}
+    {(yyval.pdv)=new produccion_declaracion_variable4((yyvsp[-2].pt),(yyvsp[-1].pln),(yyvsp[0].pa),QString::number(linea));}
 
     break;
 
   case 43:
 
-    {(yyval.pdv)=new produccion_declaracion_variable5((yyvsp[-3].pt),(yyvsp[-1].pln),(yyvsp[0].pa));}
+    {(yyval.pdv)=new produccion_declaracion_variable5((yyvsp[-3].pt),(yyvsp[-1].pln),(yyvsp[0].pa),QString::number(linea));}
 
     break;
 
   case 44:
 
-    {(yyval.pdv)=new produccion_declaracion_variable6((yyvsp[-2].pt),(yyvsp[0].pln));}
+    {(yyval.pdv)=new produccion_declaracion_variable6((yyvsp[-2].pt),(yyvsp[0].pln),QString::number(linea));}
 
     break;
 
   case 45:
 
-    {(yyval.pdv)=new produccion_declaracion_variable7((yyvsp[-5].TEXT),(yyvsp[-3].pt),(yyvsp[-1].pln),(yyvsp[0].pa));}
+    {(yyval.pdv)=new produccion_declaracion_variable7((yyvsp[-5].TEXT),(yyvsp[-3].pt),(yyvsp[-1].pln),(yyvsp[0].pa),QString::number(linea));}
 
     break;
 
   case 46:
 
-    {(yyval.pdv)=new produccion_declaracion_variable_8((yyvsp[-4].TEXT),(yyvsp[-2].pt),(yyvsp[0].pln));}
+    {(yyval.pdv)=new produccion_declaracion_variable_8((yyvsp[-4].TEXT),(yyvsp[-2].pt),(yyvsp[0].pln),QString::number(linea));}
 
     break;
 
   case 47:
 
-    {(yyval.pt)=new produccion_tipo1((yyvsp[0].TEXT));}
+    {(yyval.pt)=new produccion_tipo1((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 48:
 
-    {(yyval.pt)=new produccion_tipo2((yyvsp[0].TEXT));}
+    {(yyval.pt)=new produccion_tipo2((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 49:
 
-    {(yyval.pt)=new produccion_tipo3((yyvsp[0].TEXT));}
+    {(yyval.pt)=new produccion_tipo3((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 50:
 
-    {(yyval.pt)=new produccion_tipo4((yyvsp[0].TEXT));}
+    {(yyval.pt)=new produccion_tipo4((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 51:
 
-    {(yyval.pt)=new produccion_tipo5((yyvsp[0].TEXT));}
+    {(yyval.pt)=new produccion_tipo5((yyvsp[0].TEXT),QString::number(linea));}
 
     break;
 
   case 52:
 
-    {(yyval.pa)=new produccion_asignacion1((yyvsp[-2].pexp),(yyvsp[0].pla));}
+    {(yyval.pa)=new produccion_asignacion1((yyvsp[-2].pexp),(yyvsp[0].pla),QString::number(linea));}
 
     break;
 
   case 53:
 
-    {(yyval.pa)=new produccion_asignacion2((yyvsp[0].pexp));}
+    {(yyval.pa)=new produccion_asignacion2((yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 54:
 
-    {(yyval.pla)=new produccion_lista_asignacion1((yyvsp[-4].pla),(yyvsp[-2].TEXT),(yyvsp[0].pexp));}
+    {(yyval.pla)=new produccion_lista_asignacion1((yyvsp[-4].pla),(yyvsp[-2].TEXT),(yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 55:
 
-    {(yyval.pla)=new produccion_lista_asignacion2((yyvsp[-2].dec),(yyvsp[0].pexp));}
+    {(yyval.pla)=new produccion_lista_asignacion2((yyvsp[-2].dec),(yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 56:
 
-    {(yyval.pla)=new produccion_lista_asignacion3((yyvsp[-2].TEXT),(yyvsp[0].pexp));}
+    {(yyval.pla)=new produccion_lista_asignacion3((yyvsp[-2].TEXT),(yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
   case 57:
 
-    {(yyval.pla)=new produccion_lista_asignacion4((yyvsp[-2].TEXT),(yyvsp[0].pexp));}
+    {(yyval.pla)=new produccion_lista_asignacion4((yyvsp[-2].TEXT),(yyvsp[0].pexp),QString::number(linea));}
 
     break;
 
@@ -2485,103 +2495,97 @@ yyreduce:
 
   case 88:
 
-    {(yyval.pexp) = new expresion_vector((yyvsp[-1].prlc));}
-
-    break;
-
-  case 89:
-
-    {(yyval.pexp) = new expresion_llamada_metodo((yyvsp[-3].TEXT),(yyvsp[-1].prlc));}
+    {(yyval.pexp)=new expresion_vector((yyvsp[-1].prlc));}
 
     break;
 
   case 90:
 
-    {(yyval.pc)=new produccion_ciclos1((yyvsp[-8].pexp),(yyvsp[-5].pli),(yyvsp[-1].pli));}
+    {(yyval.pc)=new produccion_ciclos1((yyvsp[-8].pexp),(yyvsp[-5].pli),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 91:
 
-    {(yyval.pc)=new produccion_ciclos2((yyvsp[-4].pexp),(yyvsp[-1].pli));}
+    {(yyval.pc)=new produccion_ciclos2((yyvsp[-4].pexp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 92:
 
-    {(yyval.pc)=new produccion_ciclos3((yyvsp[-4].pexp),(yyvsp[-1].pli));}
+    {(yyval.pc)=new produccion_ciclos3((yyvsp[-4].pexp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 93:
 
-    {(yyval.pc)=new produccion_ciclos4((yyvsp[-8].pla),(yyvsp[-6].pexp),(yyvsp[-4].pla),(yyvsp[-1].pli));}
+    {(yyval.pc)=new produccion_ciclos4((yyvsp[-8].pla),(yyvsp[-6].pexp),(yyvsp[-4].pla),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 94:
 
-    {(yyval.pc)=new produccion_ciclos5((yyvsp[-6].pli),(yyvsp[-2].pexp));}
+    {(yyval.pc)=new produccion_ciclos5((yyvsp[-6].pli),(yyvsp[-2].pexp),QString::number(linea));}
 
     break;
 
   case 95:
 
-    {(yyval.pc)=new produccion_ciclos6((yyvsp[-4].pexp),(yyvsp[-1].plc));}
+    {(yyval.pc)=new produccion_ciclos6((yyvsp[-4].pexp),(yyvsp[-1].plc),QString::number(linea));}
 
     break;
 
   case 96:
 
-    {(yyval.plc)=new produccion_lista_case1((yyvsp[-4].plc),(yyvsp[-2].pexp),(yyvsp[0].pli));}
+    {(yyval.plc)=new produccion_lista_case1((yyvsp[-4].plc),(yyvsp[-2].pexp),(yyvsp[0].pli),QString::number(linea));}
 
     break;
 
   case 97:
 
-    {(yyval.plc)=new produccion_lista_case2((yyvsp[-2].pexp),(yyvsp[0].pli));}
+    {(yyval.plc)=new produccion_lista_case2((yyvsp[-2].pexp),(yyvsp[0].pli),QString::number(linea));}
 
     break;
 
   case 98:
 
-    {(yyval.plc)=new produccion_lista_case3((yyvsp[0].pli));}
+    {(yyval.plc)=new produccion_lista_case3((yyvsp[0].pli),QString::number(linea));}
 
     break;
 
   case 99:
 
-    {(yyval.pdm)=new produccion_declaracion_metodo1((yyvsp[-7].pt),(yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli));}
+    {(yyval.pdm)=new produccion_declaracion_metodo1((yyvsp[-7].pt),(yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 100:
 
-    {(yyval.pdm)=new produccion_declaracion_metodo2((yyvsp[-7].pt),(yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli));}
+    {(yyval.pdm)=new produccion_declaracion_metodo2((yyvsp[-7].pt),(yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 101:
 
-    {(yyval.pdm)=new produccion_declaracion_metodo3((yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli));}
+    {(yyval.pdm)=new produccion_declaracion_metodo3((yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 102:
 
-    {(yyval.pdm)=new produccion_declaracion_metodo4((yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli));}
+    {(yyval.pdm)=new produccion_declaracion_metodo4((yyvsp[-6].dec),(yyvsp[-4].plp),(yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 103:
 
-    {(yyval.plp)=new produccion_lista_parametros1((yyvsp[-2].plp),(yyvsp[0].pp));}
+    {(yyval.plp)=new produccion_lista_parametros1((yyvsp[-2].plp),(yyvsp[0].pp),QString::number(linea));}
 
     break;
 
   case 104:
 
-    {(yyval.plp)=new produccion_lista_parametros2((yyvsp[0].pp));}
+    {(yyval.plp)=new produccion_lista_parametros2((yyvsp[0].pp),QString::number(linea));}
 
     break;
 
@@ -2593,37 +2597,37 @@ yyreduce:
 
   case 106:
 
-    {(yyval.pp)=new produccion_parametro1((yyvsp[-1].pt),(yyvsp[0].dec));}
+    {(yyval.pp)=new produccion_parametro1((yyvsp[-1].pt),(yyvsp[0].dec),QString::number(linea));}
 
     break;
 
   case 107:
 
-    {(yyval.pintar)=new produccion_pintar_p1((yyvsp[-8].pexp),(yyvsp[-6].pexp),(yyvsp[-4].TEXT),(yyvsp[-2].pexp));}
+    {(yyval.pintar)=new produccion_pintar_p1((yyvsp[-8].pexp),(yyvsp[-6].pexp),(yyvsp[-4].TEXT),(yyvsp[-2].pexp),QString::number(linea));}
 
     break;
 
   case 108:
 
-    {(yyval.por)=new produccion_pintar_or1((yyvsp[-12].pexp),(yyvsp[-10].pexp),(yyvsp[-8].TEXT),(yyvsp[-6].pexp),(yyvsp[-4].pexp),(yyvsp[-2].pexp));}
+    {(yyval.por)=new produccion_pintar_or1((yyvsp[-12].pexp),(yyvsp[-10].pexp),(yyvsp[-8].TEXT),(yyvsp[-6].pexp),(yyvsp[-4].pexp),(yyvsp[-2].pexp),QString::number(linea));}
 
     break;
 
   case 110:
 
-    {(yyval.prin)=new produccion_principal1((yyvsp[-1].pli));}
+    {(yyval.prin)=new produccion_principal1((yyvsp[-1].pli),QString::number(linea));}
 
     break;
 
   case 111:
 
-    {(yyval.po)=new produccion_ordenar1((yyvsp[-4].TEXT),(yyvsp[-2].TEXT));}
+    {(yyval.po)=new produccion_ordenar1((yyvsp[-4].TEXT),(yyvsp[-2].TEXT),QString::number(linea));}
 
     break;
 
   case 112:
 
-    {(yyval.ps)=new produccion_sumarizar1((yyvsp[-2].TEXT));}
+    {(yyval.ps)=new produccion_sumarizar1((yyvsp[-2].TEXT),QString::number(linea));}
 
     break;
 

@@ -1,7 +1,8 @@
 #include "produccion_lista_nombre1.h"
 #include"visitor.h"
-produccion_lista_nombre1::produccion_lista_nombre1(produccion_lista_nombre*pl, declarador *iden)
+produccion_lista_nombre1::produccion_lista_nombre1(produccion_lista_nombre*pl, declarador *iden, QString fila)
 {
+    this->fila=fila;
     this->pl=pl;
     this->iden=iden;
 }

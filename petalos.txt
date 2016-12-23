@@ -24,6 +24,7 @@
 	?
 
 	principal()¿
+                var entero arreglo arr [2][4][7]={{1,2},{2,3}}$
 		.petase(2,3)$
 	?
 

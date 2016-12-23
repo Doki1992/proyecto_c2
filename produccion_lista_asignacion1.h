@@ -5,10 +5,11 @@
 class produccion_lista_asignacion1:public produccion_lista_asignacion
 {
 public:
+    QString fila;
     produccion_lista_asignacion*pl;
     produccion_expresion*pe;
     QString iden;
-    produccion_lista_asignacion1(produccion_lista_asignacion*pl,QString iden,produccion_expresion*pe);
+    produccion_lista_asignacion1(produccion_lista_asignacion*pl,QString iden,produccion_expresion*pe,QString fila);
     virtual QString accept(visitor *v);
 };
 

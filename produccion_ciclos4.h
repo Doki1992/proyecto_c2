@@ -7,11 +7,12 @@
 class produccion_ciclos4:public produccion_ciclos
 {
 public:
+    QString fila;
     produccion_lista_asignacion*pi;
     produccion_lista_asignacion*pf;
     produccion_expresion*pe;
     produccion_lista_instrucciones*pl;
-    produccion_ciclos4(produccion_lista_asignacion*pi,produccion_expresion*pe,produccion_lista_asignacion*pf,produccion_lista_instrucciones*pl);
+    produccion_ciclos4(produccion_lista_asignacion*pi,produccion_expresion*pe,produccion_lista_asignacion*pf,produccion_lista_instrucciones*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 

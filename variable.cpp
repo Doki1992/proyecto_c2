@@ -10,5 +10,5 @@ variable::variable(QString tipo, QString id, QString valor, QString visibilidad,
 
 QString variable::getId()
 {
-    return"variable";
+    return"";
 }

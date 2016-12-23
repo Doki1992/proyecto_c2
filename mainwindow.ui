@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>20</y>
+      <y>80</y>
       <width>191</width>
       <height>271</height>
      </rect>
@@ -44,9 +44,9 @@
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>10</y>
+      <y>110</y>
       <width>301</width>
-      <height>321</height>
+      <height>221</height>
      </rect>
     </property>
    </widget>
@@ -95,7 +95,29 @@
     <addaction name="actionGuardar_como"/>
     <addaction name="actionAbrir"/>
    </widget>
+   <widget class="QMenu" name="menuERRORES">
+    <property name="title">
+     <string>ERRORES</string>
+    </property>
+    <addaction name="actionTabla_errores"/>
+   </widget>
+   <widget class="QMenu" name="menuTabla">
+    <property name="title">
+     <string>tabla</string>
+    </property>
+    <addaction name="actionSimbolos"/>
+   </widget>
+   <widget class="QMenu" name="menuDebugear">
+    <property name="title">
+     <string>analizar</string>
+    </property>
+    <addaction name="actionDebugear"/>
+    <addaction name="actionCompilar"/>
+   </widget>
    <addaction name="menuArchivo"/>
+   <addaction name="menuERRORES"/>
+   <addaction name="menuTabla"/>
+   <addaction name="menuDebugear"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -124,6 +146,26 @@
   <action name="actionAbrir">
    <property name="text">
     <string>abrir</string>
+   </property>
+  </action>
+  <action name="actionDebugear">
+   <property name="text">
+    <string>debugear</string>
+   </property>
+  </action>
+  <action name="actionCompilar">
+   <property name="text">
+    <string>compilar</string>
+   </property>
+  </action>
+  <action name="actionSimbolos">
+   <property name="text">
+    <string>simbolos</string>
+   </property>
+  </action>
+  <action name="actionTabla_errores">
+   <property name="text">
+    <string>tabla errores</string>
    </property>
   </action>
  </widget>

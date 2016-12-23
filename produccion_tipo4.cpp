@@ -1,7 +1,8 @@
 #include "produccion_tipo4.h"
 #include"visitor.h"
-produccion_tipo4::produccion_tipo4(QString tipo)
+produccion_tipo4::produccion_tipo4(QString tipo,QString fila)
 {
+    this->fila=fila;
     this->tipo=tipo;
 }
 

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "QFile"
 #include "QTextStream"
+#include<QDateTime>
 #include<QFileDialog>
 #include"mostrar_lineas.h"
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,10 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeView->setCurrentIndex(index);
     ui->treeView->resizeColumnToContents(0);
     this->ts = new tabla_simbolos();
-    this->types = new chequea_tipos_1(ts);
-    ambitos=new QLinkedList<simbolo*>();
+    this->types = new chequea_tipos_1(ts,errores);
+    ambitos=new QLinkedList<tabla_simbolos*>();
     this->exec = new ejecuta_visitor(ts,ambitos);
-    this->lista_heredados = new QLinkedList<heredados*>();
 }
 
 MainWindow::~MainWindow()
@@ -31,24 +31,6 @@ MainWindow::~MainWindow()
 
 }
 int cont_tabs=0;
-
-void MainWindow::crear_heredados(QLinkedList<heredados *> *lista_heredados,lienzo* l,tabla_simbolos*ts){
-    QStringList lista_h;
-    QString lis = l->hereda;
-    if(lis.contains(",")){
-        lista_h = lis.split(",");
-    }else{
-        lista_h.append(lis);
-    }
-    for (int i=0; i<lista_h.count(); i++){
-        if(ts->contains(lista_h.at(i))){
-            heredados* h = new heredados(NULL,ts->value(lista_h.at(i)),"");
-            lista_heredados->append(h);
-        }
-
-    }
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     ambitos->clear();
@@ -61,10 +43,12 @@ void MainWindow::on_pushButton_clicked()
     const char* x = "temp.txt";
     FILE* input = fopen(x, "r" );
     yyrestart(input);//SE PASA LA CADENA DE ENTRADA A FLEX
-    setSalida(ui->textEdit);//SE ASIGNA EL PUNTERO DE LA SALIDA PARA SER USADA POR BISON
+    setSalida(ui->textEdit);//SE ASIGNA EL PUNTERO DE LA SALIDA PARA SER USADA POR BISON    
+    asigna_lista(lista_errores());
     yyparse();//SE INICIA LA COMPILACION
-    nodo*n=getRaiz();
-
+    nodo*n=getRaiz();    
+    //    QLinkedList<token_error*> *errores=new QLinkedList<token_error*>();
+    errores=lista_errores_s();
      //tabla de simbolos
 if(n!=NULL){
     QString tip = n->accept(types);
@@ -75,34 +59,19 @@ if(n!=NULL){
             if(l->ts->contains("principal")==true){
                 //primero meter tabla de simbolos del lienzo donde esta el principal
                 //luego el del principal
-                //ambitos->append(l->ts);                
-
+                ambitos->append(l->ts);//INGRESANDO TABLA DE SIMBOLOS DEL LIENZO
                 QHash<QString,simbolo*>::iterator j;
                 for(j=l->ts->begin();j!=l->ts->end();++j){
-                    simbolo * s = *j;
-                    QString id ="";
-                    declaracion_metodo*m;
-                    variable*v;
-                    if(s->getId()=="metodo"){
-                        m = (declaracion_metodo*)s;
-                        id=m->id;
-                    }else{
-                        v =(variable*)s;
-                        id=v->id;
-                    }
-                    if(id=="principal"){
-                        ambitos->append(m);//ingresando tabla de simbolos del metodo principal
+                    declaracion_metodo*m=(declaracion_metodo*)j.value();
+                    if(m->id=="principal"){
+                        ambitos->append(m->ts);//ingresando tabla de simbolos del metodo principal
                     }
                 }
-                ambitos->append(l);//INGRESANDO TABLA DE SIMBOLOS DEL LIENZO
                 qDebug()<<"entro";
             }
         }
         //ejecuta visitor
         if(ambitos->count()==2){
-            lienzo * l = (lienzo*)ambitos->last();//por aqui hay un error
-            crear_heredados(lista_heredados,l,ts);
-            exec->lista=lista_heredados;
             n->accept(exec);
         }else{
             qDebug()<<"solo puede haber una clase con un metodo PRINCIPAL";
@@ -200,4 +169,54 @@ void MainWindow::on_actionNuevo_triggered()
     Mostrar_lineas*c=new Mostrar_lineas();
     ui->tabWidget->addTab(c,"pagina "+QString::number(cont_tabs));
     cont_tabs++;
+}
+
+void MainWindow::on_actionSimbolos_triggered()
+{
+    QString rep=reporte_simbolos();    
+}
+QString MainWindow::reporte_simbolos(){
+    QString cuerpo="";
+    QString encabezado="<html><head><title>TABLA DE SIMBOLOS</title></head><body><table>";
+    QString cierre="</table></body></html>";//<tr> es por cada fila y td para cada columna
+    QDateTime local(QDateTime::currentDateTime());
+    cuerpo=encabezado+cuerpo+local.toString();
+    cuerpo=cuerpo+"<tr><td>ID</td><td>TIPO</td><td>ROL</td><td>AMBITO</td></tr>";
+    for(int i=0;i<100;i++) {
+        cuerpo="<tr>";
+    }
+    cuerpo=cuerpo+cierre;
+    return cuerpo;
+}
+QString MainWindow::reporte_errores(){
+    QString cuerpo="";
+    QString encabezado="<html><head><title>REPORTE DE ERRORES</title></head><body><table>";
+    QString cierre="</table></body></html>";//<tr> es por cada fila y td para cada columna
+    QDateTime local(QDateTime::currentDateTime());
+    cuerpo=encabezado+cuerpo+local.toString();
+    cuerpo=cuerpo+"<tr><td>TEXTO</td><td>LINEA</td><td>COLUMNA</td><td>TIPO</td><td>DESCRIPCION</td></tr>";
+    QLinkedList<token_error*>::iterator i;
+    if(errores->count()==0){
+        cuerpo=cuerpo+"<tr><td>NO HAY ERRORES :) </td></tr>";
+    }else{
+    for(i=errores->begin();i!=errores->end();++i) {
+        cuerpo=cuerpo+"<tr>";
+        token_error*t=(*i);
+        cuerpo=cuerpo+"<td>"+t->valor+"</td>"+"<td>"+t->fila+"</td>"+"<td>"+t->col+"</td>"+"<td>"+t->tipo+"</td>"+"<td>"+t->descripcion+"</td>";
+        cuerpo=cuerpo+"</tr>";
+    }
+    }
+    cuerpo=cuerpo+cierre;
+    return cuerpo;
+}
+
+void MainWindow::on_actionTabla_errores_triggered()
+{
+    QString rep=reporte_errores();
+    QFile archivo("/home/daniel/Escritorio/errores.html");
+    if (archivo.open(QIODevice::WriteOnly|QIODevice::Text))
+    {
+        archivo.write(rep.toUtf8());
+    }
+    //falta abrir el archivo de una vez de los reporte de errores
 }

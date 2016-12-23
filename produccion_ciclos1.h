@@ -9,7 +9,8 @@ public:
     produccion_expresion*pe;
     produccion_lista_instrucciones*l1;
     produccion_lista_instrucciones*l2;
-    produccion_ciclos1(produccion_expresion*pe,produccion_lista_instrucciones*p1,produccion_lista_instrucciones*p2);
+    QString fila;
+    produccion_ciclos1(produccion_expresion*pe,produccion_lista_instrucciones*p1,produccion_lista_instrucciones*p2,QString fila);
     virtual QString accept(visitor *v);
 };
 

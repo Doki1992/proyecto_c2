@@ -1,7 +1,8 @@
 #include "produccion_lienzo4.h"
 #include"visitor.h"
-produccion_lienzo4::produccion_lienzo4(produccion_visibilidad*pv,QString id,produccion_extiende*pe,produccion_lista_instrucciones*pl)
+produccion_lienzo4::produccion_lienzo4(produccion_visibilidad*pv,QString id,produccion_extiende*pe,produccion_lista_instrucciones*pl,QString fila)
 {
+    this->fila=fila;
     this->pl=pl;
     this->pe=pe;
     this->pv=pv;

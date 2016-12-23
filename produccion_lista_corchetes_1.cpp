@@ -1,7 +1,8 @@
 #include "produccion_lista_corchetes_1.h"
 #include "visitor.h"
-produccion_lista_corchetes_1::produccion_lista_corchetes_1(lista_corchetes *lc, produccion_expresion *exp)
+produccion_lista_corchetes_1::produccion_lista_corchetes_1(lista_corchetes *lc, produccion_expresion *exp, QString fila)
 {
+    this->fila=fila;
     this->exp=exp;
     this->lc=lc;
 

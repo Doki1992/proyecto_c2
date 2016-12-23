@@ -5,12 +5,12 @@
 class Vector:public simbolo
 {
 public:
-    Vector();
-    int size;
-    int dimensiones;
+    Vector(QString conservar,QString tipo,QString nombre,QStringList*lista_valores,QLinkedList<int>*lista_dimensiones);
+    QString conservar;
     QString tipo;
     QString nombre;
-    //posibles valores
+    QStringList*lista_valores;
+    QLinkedList<int>*lista_dimensiones;
     virtual QString getId();
 };
 

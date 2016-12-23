@@ -1,7 +1,8 @@
 #include "produccion_extiende1.h"
 #include"visitor.h"
-produccion_extiende1::produccion_extiende1(produccion_lista_nombre *pl)
+produccion_extiende1::produccion_extiende1(produccion_lista_nombre *pl,QString fila)
 {
+    this->fila=fila;
     this->pl=pl;
 }
 

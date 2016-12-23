@@ -7,10 +7,11 @@
 class produccion_declaracion_variable4:public produccion_declaracion_variable
 {
 public:
+    QString fila;
     produccion_tipo*pt;
     produccion_lista_nombre*pl;
     produccion_asignacion*pa;
-    produccion_declaracion_variable4(produccion_tipo*pt,produccion_lista_nombre*pl,produccion_asignacion*pa);
+    produccion_declaracion_variable4(produccion_tipo*pt,produccion_lista_nombre*pl,produccion_asignacion*pa,QString fila);
     virtual QString accept(visitor *v);
 };
 

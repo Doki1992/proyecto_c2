@@ -1,7 +1,8 @@
 #include "produccion_ciclos4.h"
 #include"visitor.h"
-produccion_ciclos4::produccion_ciclos4(produccion_lista_asignacion *pi, produccion_expresion *pe, produccion_lista_asignacion *pf, produccion_lista_instrucciones *pl)
+produccion_ciclos4::produccion_ciclos4(produccion_lista_asignacion *pi, produccion_expresion *pe, produccion_lista_asignacion *pf, produccion_lista_instrucciones *pl, QString fila)
 {
+    this->fila=fila;
     this->pe=pe;
     this->pi=pi;
     this->pf=pf;

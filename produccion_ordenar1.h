@@ -7,7 +7,8 @@ class produccion_ordenar1:public produccion_ordenar
 public:
     QString iden;
     QString cadena;
-    produccion_ordenar1(QString iden,QString cadena);
+    QString fila;
+    produccion_ordenar1(QString iden,QString cadena,QString fila);
     virtual QString accept(visitor *v);
 };
 

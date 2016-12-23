@@ -6,13 +6,14 @@
 class produccion_pintar_or1:public produccion_pintar_or
 {
 public:
+    QString fila;
     produccion_expresion*p1;
     produccion_expresion*p2;
     produccion_expresion*p4;
     produccion_expresion*p5;
     QString cadena;
     produccion_expresion*p6;
-    produccion_pintar_or1(produccion_expresion*p1,produccion_expresion*p2,QString cadena,produccion_expresion*p4,produccion_expresion*p5,produccion_expresion*p6);
+    produccion_pintar_or1(produccion_expresion*p1,produccion_expresion*p2,QString cadena,produccion_expresion*p4,produccion_expresion*p5,produccion_expresion*p6,QString fila);
     virtual QString accept(visitor *v);
 };
 

@@ -7,11 +7,12 @@
 class produccion_lienzo4:public produccion_lienzo
 {
 public:
+    QString fila;
     produccion_visibilidad*pv;
     QString id;
     produccion_lista_instrucciones*pl;
     produccion_extiende*pe;
-    produccion_lienzo4(produccion_visibilidad*pv,QString id,produccion_extiende*pe,produccion_lista_instrucciones*pl);
+    produccion_lienzo4(produccion_visibilidad*pv,QString id,produccion_extiende*pe,produccion_lista_instrucciones*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 

@@ -3,12 +3,19 @@
 #include "parser.h"
 #include <iostream>
 #include <QString>
+#include"token_error.h"
+#include<QLinkedList>
 int columna=0;
 int linea=0;
+static QLinkedList<token_error*>*errores1=new QLinkedList<token_error*>();
+QLinkedList<token_error*> *lista_errores(){
+    return errores1;
+};
 %}
+comentariolinea ">>"[^\n']*""
 letra [a-zñA-ZÑ]
 digito [0-9]
-identificador {letra}+
+identificador ({letra})+({letra}|{digito}|"_")*
 caracter [\']([^\"\n]|(\\\"))[\']
 comentario "<-"[^'*']*"->"
 numero {digito}+
@@ -95,7 +102,11 @@ cadenacomillas [\"]([^\"\n]|(\\\"))*[\"]
 {numero}        { columna=columna+strlen(yylval.TEXT); strcpy(yylval.TEXT, yytext); return numero; }
 {decimal}        { columna=columna+strlen(yylval.TEXT); strcpy(yylval.TEXT, yytext); return decimal; }
 {comentario}    { /*Se ignoran*/ }
-
+{comentariolinea}    { /*Se ignoran*/ }
 [[:blank:]]     { /*Se ignoran*/ }
-.               {std::cout <<yytext<<"Error Lexico en la linea"<< linea<<"columna: "<<columna<<std::endl;}
+.               {
+                std::cout <<yytext<<"Error Lexico en la linea"<< linea<<"columna: "<<columna<<std::endl;
+                token_error *t=new token_error(yytext,QString::number(linea),QString::number(columna),"error lexico","caracter no permitido");
+                errores1->append(t);
+                }
 %%

@@ -8,7 +8,8 @@ class produccion_ciclos5:public produccion_ciclos
 public:
     produccion_expresion*pe;
     produccion_lista_instrucciones*pl;
-    produccion_ciclos5(produccion_lista_instrucciones*pl,produccion_expresion*pe);
+    QString fila;
+    produccion_ciclos5(produccion_lista_instrucciones*pl,produccion_expresion*pe,QString fila);
     virtual QString accept(visitor *v);
 };
 

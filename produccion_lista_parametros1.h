@@ -7,7 +7,8 @@ class produccion_lista_parametros1:public produccion_lista_parametros
 public:
     produccion_lista_parametros*pl;
     produccion_parametro*pp;
-    produccion_lista_parametros1(produccion_lista_parametros*pl,produccion_parametro*pp);
+    QString fila;
+    produccion_lista_parametros1(produccion_lista_parametros*pl,produccion_parametro*pp,QString fila);
     virtual QString accept(visitor *v);
 };
 

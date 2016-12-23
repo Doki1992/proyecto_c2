@@ -10,19 +10,18 @@
 #include "variable.h"
 #include "stdlib.h"
 #include <QDebug>
-
+#include"token_error.h"
 class chequea_tipos_1:public visitor
 {
 public:
-    chequea_tipos_1(tabla_simbolos*ts);
+    chequea_tipos_1(tabla_simbolos*ts,QLinkedList<token_error*> *errores);
+    int asignar_valor_vector(QLinkedList<int>*lista,int tam_dimension,int aux,int aux_bandera);
+    int tamano_dimension_anterior(QLinkedList<int>*lista,int tam);
+    int obtener_valor_columna(QLinkedList<int>*lista);
     tabla_simbolos*ts;
     lienzo * lienzo_activo;
     declaracion_metodo * metodo_activo;
-    void copia_metodo_actual(declaracion_metodo*m1,declaracion_metodo*m2);
-    void insertar_metodo(declaracion_metodo*m1,declaracion_metodo*m2);
-    QString extiende="";
-
-
+    QLinkedList<token_error*> *errores;
     virtual QString visit_pintar_s11(produccion_pintar_s11*pd) ;
     virtual QString visit_pintar_or1(produccion_pintar_or1*pd) ;
     virtual QString visit_pintar_p1(produccion_pintar_p1*pd) ;
@@ -86,6 +85,7 @@ public:
     virtual QString visit_expresion_menor(expresion_menor*e);
     virtual QString visit_expresion_menorq(expresion_menoq*e);
     virtual QString visit_expresion_not(expresion_not*e);
+    virtual QString visit_expresion_nulo(expresion_nulo*e);
     virtual QString visit_expresion_parentesis(expresion_parentesis*e);
     virtual QString visit_expresion_potencia(expresion_potencia*e);
     virtual QString visit_expresion_mas(expresion_mas*e);
@@ -136,7 +136,6 @@ public:
     virtual QString visit_expresion_vector(expresion_vector*pd) ;
     virtual QString visit_lista_expresion1(produccion_lista_expresion1*pd);
     virtual QString visit_lista_expresion2(produccion_lista_expresion2*pd);
-    virtual QString visit_expresion_llamada(expresion_llamada_metodo*pd) ;
 };
 
 #endif // CHEQUEA_TIPOS_1_H

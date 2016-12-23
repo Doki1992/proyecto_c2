@@ -5,7 +5,7 @@
 #include"verifica_tipos.h"
 #include"mainwindow.h"
 #include<QGraphicsItem>
-ejecuta_visitor::ejecuta_visitor(tabla_simbolos *ts, QLinkedList<simbolo *> *ambitos)
+ejecuta_visitor::ejecuta_visitor(tabla_simbolos *ts, QLinkedList<tabla_simbolos *> *ambitos)
 {
     this->ts=ts;
     this->ambitos=ambitos;
@@ -14,6 +14,7 @@ ejecuta_visitor::ejecuta_visitor(tabla_simbolos *ts, QLinkedList<simbolo *> *amb
 QString ejecuta_visitor::visit_pintar_s11(produccion_pintar_s11 *pd)
 {
     QGraphicsTextItem *text=new QGraphicsTextItem(pd->p4->accept(this));
+    rect_local->append(text);
     return "";
 }
 
@@ -22,12 +23,13 @@ QString ejecuta_visitor::visit_pintar_or1(produccion_pintar_or1 *pd)
     QString tipo=pd->p6->accept(this);
     QString color=pd->cadena;
     if(tipo=="r"){
-
         QGraphicsRectItem *rectangulo=new QGraphicsRectItem(pd->p1->accept(this).toInt(),pd->p1->accept(this).toInt(),pd->p4->accept(this).toInt(),pd->p5->accept(this).toInt());
-
+        rect_local->append(rectangulo);
+       // rectangulo->setBrush(QColor::red());
         return"";
     }else if(tipo=="o"){
         QGraphicsEllipseItem *elip=new QGraphicsEllipseItem(pd->p1->accept(this).toInt(),pd->p1->accept(this).toInt(),pd->p4->accept(this).toInt(),pd->p5->accept(this).toInt());
+        rect_local->append(elip);
         return "";
     }else{
         return "error de parametro, solo permite o u r";
@@ -78,8 +80,8 @@ QString ejecuta_visitor::visit_lienzo1(produccion_lienzo1 *pd)
 
 QString ejecuta_visitor::visit_lienzo2(produccion_lienzo2 *pd)
 {
-
-    //QString visibilidad=pd->pv->accept(this);    
+    //QString visibilidad=pd->pv->accept(this);
+    QString nombre_lienzo=pd->iden;
    /* tabla_simbolos *no=ambitos->takeFirst();
     lienzo*l=(lienzo*)no->value(nombre_lienzo);
     if(ambitos->takeFirst()->contains(nombre_lienzo)==true){
@@ -105,8 +107,8 @@ QString ejecuta_visitor::visit_lienzo4(produccion_lienzo4 *pd)
 {
     //QString visibilidad=pd->pv->accept(this);
     //QString nombre_lienzo=pd->id;
-    QString extiende = pd->pe->accept(this);
-    pd->pl->accept(this);//instrucciones
+    //QString extiende = pd->pe->accept(this);
+    pd->pl->accept(this);
     return "";
 }
 
@@ -144,7 +146,7 @@ QString ejecuta_visitor::visit_extiende1(produccion_extiende1 *pd)
 
 QString ejecuta_visitor::visit_lista_nombre1(produccion_lista_nombre1 *pd)
 {
-    return pd->pl->accept(this)+","+pd->iden->accept(this);
+    return pd->pl->accept(this)+pd->iden->accept(this);
 }
 
 QString ejecuta_visitor::visit_lista_nombre2(produccion_lista_nombre2 *pd)
@@ -154,14 +156,14 @@ QString ejecuta_visitor::visit_lista_nombre2(produccion_lista_nombre2 *pd)
 
 QString ejecuta_visitor::visit_lista_instrucciones1(produccion_lista_instrucciones1 *pd)
 {
-    pd->pl->accept(this);//lista de instrucciones
-    pd->pi->accept(this);//una instruccion
+    pd->pl->accept(this);
+    pd->pi->accept(this);   
     return "";
 }
 
 QString ejecuta_visitor::visit_lista_instrucciones2(produccion_lista_instrucciones2 *pd)
 {    
-    pd->pi->accept(this); //visita una instruccion
+    pd->pi->accept(this);
     return "";
 }
 
@@ -184,23 +186,6 @@ QString ejecuta_visitor::visit_declaracion_variable3(produccion_declaracion_vari
 
 QString ejecuta_visitor::visit_declaracion_variable4(produccion_declaracion_variable4 *pd)
 {
-    //declaracion de variable ojo con esto ???!!!
-  /*  /*else if buscar en clases de las que hereda*/
-    pd->pa->accept(this);
-    if(es_llamada=="si"){
-        I_need_identifer="si";
-            QString nombre = pd->pl->accept(this);
-            I_need_identifer="no";
-            //obtener la variable con ese nombre si no existe que mierda; jajajaj
-            declaracion_metodo *m = (declaracion_metodo*)ambitos->first();
-            variable *v ;
-            if(m->ts->contains(nombre)==true){
-                v = (variable*)m->ts->value(nombre);
-                QString valor =pd->pa->accept(this);
-                v->valor=valor;
-            }
-    }
-    es_llamada="no";
     return"";
 }
 
@@ -241,28 +226,8 @@ QString ejecuta_visitor::visit_lista_asignacion1(produccion_lista_asignacion1 *p
 
 QString ejecuta_visitor::visit_lista_asignacion2(produccion_lista_asignacion2 *pd)
 {
-    //necesito el iden
-    I_need_identifer="si";
     QString id=pd->iden->accept(this);
-    I_need_identifer="no";
     QString valor=pd->pe->accept(this);
-    tabla_simbolos* temp = get_tabla_temporal();
-    if(temp->contains(id)==true){
-        simbolo * s=temp->value(id);
-        if(s->getId()=="variable"){
-            variable *v = (variable*)temp->value(id);
-            verifica_tipos*verifica=new verifica_tipos();
-            QString res=verifica->asigna_tipo(v->tipo,valor);
-            if(!res.contains("error")){
-                v->tipo=res;
-                v->valor=valor;
-            }else{
-                return "error de tipos";
-            }
-
-        }
-    }
-
     return"";
 }
 
@@ -357,205 +322,60 @@ QString ejecuta_visitor::visit_instruccion13(produccion_instruccion13*pd)
     return "";
 }
 
-QString ejecuta_visitor::asigna_parametros(QLinkedList<simbolo *> *parametros, QStringList lista){
-    QLinkedList<simbolo*>::iterator i;
-    //QStringList::iterator j;
-    int j=0;
-    for(i=parametros->begin(); i!=parametros->end();i++){
-        verifica_tipos*v=new verifica_tipos();
-        variable*var=(variable*)(*i);
-        QString res=v->asigna_tipo(var->tipo,lista.at(j));
-        if(!res.contains("error")){
-            var->tipo=res;
-            var->valor=lista.at(j);
-        }else{
-            qDebug()<<"error de parametros en el metodo";
-            return "error de tipos";
-        }
-    j++;
-    }
-    return "correcto";
-}
-
-void ejecuta_visitor::cargar_homonimos(QString nombre){
-    QLinkedList<heredados*>::iterator i;
-    for(i=lista->begin(); i!=lista->end();i++){
-        heredados*h = (heredados*)(*i);
-        lienzo* activo =(lienzo*) h->padre;
-        QHash<QString,simbolo*>::iterator j;
-        for (j=activo->ts->begin(); j!=activo->ts->end();j++){
-            declaracion_metodo*m;
-            variable*v;
-            if((*j)->getId()=="metodo"){
-                m=(declaracion_metodo*)(*j);
-                if(m->id==nombre){
-                    heredados*f =(heredados*)(*i);
-                    lienzo *l = (lienzo*)f->padre;
-                    heredados * h = new heredados(m,l,"");
-                    homonimos->append(h);
-                }
-            }else if ((*j)->getId()=="variable"){
-                v=(variable*)(*j);
-                if(v->id==nombre){
-                    heredados*f =(heredados*)(*i);
-                    lienzo *l = (lienzo*)f->padre;
-                    heredados * h = new heredados(v,l,"");
-                    homonimos_var->append(h);
-                }
-            }
-        }
-
-    }
-}
-
-declaracion_metodo* ejecuta_visitor::get_metodos_sobre_cargados(tabla_simbolos*ts, QString id, int count, lienzo *padre){
-    QHash<QString,simbolo*>::iterator i;
-    cargar_homonimos(id);
-    bool encontrado = false;
-    for (i = ts->begin(); i!=ts->end(); i++){
-        simbolo *s = *i;
-        if(s->getId()=="metodo"){
-            declaracion_metodo * m = (declaracion_metodo*)(s);
-            if(m->id==id&&m->parametros->count()==count&&homonimos->count()==0){
-                homonimos->clear();
-                return m;
-            }else if(homonimos->count()>0&&m->id==id){
-                heredados *h =new heredados(m,padre,"");
-                homonimos->append(h);
-            }
-        }
-    }
-    if(encontrado==false){
-        QLinkedList<heredados*>::iterator i;
-        int c = contar_consevar(homonimos);
-        if(c==0){
-            declaracion_metodo*d;
-            lienzo*ac = (lienzo*)homonimos->last()->padre;
-            if(homonimos->last()->hijo->getId()=="metodo"){
-             d =(declaracion_metodo*)homonimos->last()->hijo;
-            }
-            if(ac->id==padre->id&&(d->visibilidad=="publico"||d->visibilidad=="protegido")&&d->parametros->count()==count){
-                return (declaracion_metodo*)homonimos->last()->hijo;
-            }else if(d->visibilidad=="publico"||d->visibilidad=="protegido"&&d->parametros->count()==count){
-                ambitos->append(homonimos->last()->hijo);
-                ambitos->append(homonimos->last()->padre);
-                return (declaracion_metodo*)homonimos->last()->hijo;
-            }else{
-                return NULL;
-            }
-        }else if(c==1){
-            for(i=homonimos->begin(); i!=homonimos->end(); i++){
-                if((*i)->hijo->getId()=="metodo"){
-                    heredados *h = (heredados*)(*i);
-                    declaracion_metodo *d = (declaracion_metodo*)h->hijo;
-                    lienzo* ac = (lienzo*)h->padre;
-                    if(ac->id==padre->id&&d->parametros->count()==count&&d->conservar=="conservar"){
-                        return d;
-                    }else if((d->visibilidad=="publico"||d->visibilidad=="protegido")&&d->parametros->count()==count&&d->conservar=="conservar"){
-                        ambitos->prepend(ac);
-                        ambitos->prepend(d);
-                        return d;
-                    }else{
-                        return NULL;
-                    }
-
-                }
-            }
-        }
-    }
-
-    return NULL;
-
-}
-int ejecuta_visitor::contar_consevar(QLinkedList<heredados *> *homonimos){
-    QLinkedList<heredados*>::iterator i;
-    int c=0;
-    for(i=homonimos->begin(); i!=homonimos->end(); i++){
-        heredados*h = (heredados*)*i;
-        if(h->hijo->getId()=="metodo"){
-            declaracion_metodo*d = (declaracion_metodo*)h->hijo;
-            if(d->conservar=="conservar"){
-               c++;
-            }
-        }
-    }
-    return c;
-}
-
-void ejecuta_visitor::copia_parametros(tabla_simbolos *ts, QLinkedList<simbolo *> *parametros){
-    QLinkedList<simbolo*>::iterator i;
-    for (i=parametros->begin(); i!=parametros->end();i++){
-        simbolo *s = *i;
-        if(s->getId()=="variable"){
-            variable*v =(variable*) s;
-            ts->replace(v->id,v);
-        }
-
-    }
-
-}
-
-
-
 QString ejecuta_visitor::visit_instruccion14(produccion_instruccion14 *pd)
 {
     //aki se ejecuta la llamada al metodo
-    I_need_identifer="si";
     QString id=pd->iden;//id del metodo llamado
-    I_need_identifer="no";
     QString tam=pd->pl->accept(this);//valores de los metodos a enviar al metodo
-    QStringList can;
     int t=0;
     if(tam.contains(",")==true){
-    can=tam.split(",");
+    QStringList can=tam.split(",");
     t=can.count();//t sirve para la cantidad de parametros a enviar al metodo
     }else if(tam==""){
         t=0;
     }else{
         t=1;
-    }
-    lienzo*l = (lienzo*)get_ambito_padre(ambitos);
-    if(existe(id,l)==true){
-        //operar tengo que meter este ambito en la pila de ambitos si no error
-        declaracion_metodo * m_ejecutar = get_metodos_sobre_cargados(l->ts,id,t,l);//metodo que tengo que ejecutar
-        if(m_ejecutar==NULL){
-            return "error este metodo no ha sido declarado o no tiene sobrecarga valida";
-        }
-        declaracion_metodo * primero_ambito;
-        if(ambitos->first()->getId()=="metodo"){
-            primero_ambito=(declaracion_metodo*)ambitos->first();
-            //llamada recursiva ¿?
-            if(primero_ambito->id==m_ejecutar->id){
-                //es llamada recursiva
-                ambitos->takeFirst();
-                QString e = asigna_parametros(m_ejecutar->parametros,can);
-                copia_parametros(m_ejecutar->ts,m_ejecutar->parametros);
-                ambitos->prepend(m_ejecutar);
-                if(e!="error de tipos"){
-                 m_ejecutar->instrucciones->accept(this);
+    }//mike kito esto
+    tabla_simbolos*ts=ambitos->first();//obteniendo tabla de simbolos del llienzo
+    if(ts->contains(id)==true){//si existe el metodo en la ts, entonces verificamos cantidad de parametros de ambos
+        declaracion_metodo*m=(declaracion_metodo*)ts->value(id);
+        if(m->parametros->count()==t){//comparo cantidad de parametros es igual
+            //aki se verifica cada tipo q se envia con el q se recibe
+            QLinkedList<simbolo*>::iterator i;
+            i=m->parametros->begin();
+            int cont=0;
+            QStringList can=tam.split(",");
+            int correcto=0;
+            while(i!=m->parametros->end()){
+                simbolo*s=(*i);
+                variable*v=(variable*)s;
+                QString tipo=v->tipo;
+                verifica_tipos*ver=new verifica_tipos();
+                QString resultado=ver->asigna_tipo(tipo,can[cont]);
+                if(!resultado.contains("error")){
+                    v->valor=can[cont];
+                }else{
+                    correcto=1;//cambia la bandera a 1 si tiene algun error en la asignacion de parametros
                 }
-
+                ++i;
+                cont++;
+            }
+            if(correcto==0){
+                //ejecuta lo q este dentro del metodo
+                m->metodo->accept(this);
             }else{
-                //es otro metodo
-                QString e = asigna_parametros(m_ejecutar->parametros,can);
-                copia_parametros(m_ejecutar->ts,m_ejecutar->parametros);
-                copia_ambito(l->ts,m_ejecutar->ts);
-                ambitos->prepend(m_ejecutar);
-                if(e!="error de tipos"){
-                 m_ejecutar->instrucciones->accept(this);
-                }
-                ambitos->takeFirst();
+                return "error en los parametros enviados al metodo";
             }
 
-        }else{
-            return "";//es probable que no entre nunca en este else pero es por seguridad; seria un grave error que entrara
-        }
 
+        }else{
+            return "error, cantidad de parametros incorrecto";
+        }
     }else{
-        return "error este metodo no ha sido declarado";
+        return "error, el metodo no ha sido declarado";
     }
 
-
+//hasta aki
     return "";
 }
 
@@ -690,6 +510,11 @@ QString ejecuta_visitor::visit_expresion_not(expresion_not *e)
     }
 }
 
+QString ejecuta_visitor::visit_expresion_nulo(expresion_nulo *e)
+{
+
+}
+
 QString ejecuta_visitor::visit_expresion_parentesis(expresion_parentesis *e)
 {
     return e->exp1->accept(this);
@@ -716,6 +541,19 @@ QString ejecuta_visitor::visit_expresion_potencia(expresion_potencia *e)
         }if(b=="false"){
             return "1";
         }else{
+            if(a.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=a.at(1);
+                int v=as.toLatin1();
+                a=QString::number(v);
+            }if(b.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=b.at(1);
+                int v=as.toLatin1();
+                b=QString::number(v);
+            }
             val=pow(a.toDouble(),b.toDouble());
             return QString::number(val);
         }
@@ -743,6 +581,19 @@ QString ejecuta_visitor::visit_expresion_mas(expresion_mas *e)
                 return temp;
             }
         }else if(!res.contains("cadena") && !res.contains("error")){
+        if(a.contains("'")){
+            QChar as;
+            //obtener el char y devolver el numero del ascci
+            as=a.at(1);
+            int v=as.toLatin1();
+            a=QString::number(v);
+        }if(b.contains("'")){
+            QChar as;
+            //obtener el char y devolver el numero del ascci
+            as=b.at(1);
+            int v=as.toLatin1();
+            b=QString::number(v);
+        }
             double val=v->obtener_valor_booleano(a).toDouble()+v->obtener_valor_booleano(b).toDouble();
             return QString::number(val);
         }else{
@@ -761,6 +612,19 @@ QString ejecuta_visitor::visit_expresion_menos(expresion_menos *e)
         if(res.contains("bool-bool")){
             return v->resta_bool(a,b);
         }else{
+            if(a.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=a.at(1);
+                int v=as.toLatin1();
+                a=QString::number(v);
+            }if(b.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=b.at(1);
+                int v=as.toLatin1();
+                b=QString::number(v);
+            }
             val=v->obtener_valor_booleano(a).toDouble()-v->obtener_valor_booleano(b).toDouble();
             return QString::number(val);
         }
@@ -780,6 +644,19 @@ QString ejecuta_visitor::visit_expresion_por(expresion_por *e)
         if(res.contains("bool-bool")){
             return v->mul_bool(a,b);
         }else{
+            if(a.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=a.at(1);
+                int v=as.toLatin1();
+                a=QString::number(v);
+            }if(b.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=b.at(1);
+                int v=as.toLatin1();
+                b=QString::number(v);
+            }
             val=v->obtener_valor_booleano(a).toDouble()*v->obtener_valor_booleano(b).toDouble();
             return QString::number(val);
         }
@@ -809,6 +686,19 @@ QString ejecuta_visitor::visit_expresion_divi(expresion_divi *e)
         }if(b=="false"){
             return "error";
         }else{
+            if(a.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=a.at(1);
+                int v=as.toLatin1();
+                a=QString::number(v);
+            }if(b.contains("'")){
+                QChar as;
+                //obtener el char y devolver el numero del ascci
+                as=b.at(1);
+                int v=as.toLatin1();
+                b=QString::number(v);
+            }
             val=a.toDouble()/b.toDouble();
             return QString::number(val);
         }
@@ -853,6 +743,7 @@ QString ejecuta_visitor::visit_expresion_numero(expresion_numero *e)
 
 QString ejecuta_visitor::visit_expresion_iden(expresion_iden *e)
 {
+
     return e->iden->accept(this);
 }
 
@@ -893,7 +784,6 @@ QString ejecuta_visitor::visit_ciclos1(produccion_ciclos1 *pd)
 
 QString ejecuta_visitor::visit_ciclos2(produccion_ciclos2 *pd)
 {
-    //ejecuta si
     if(pd->pe->accept(this)=="true"){
         pd->l1->accept(this);
     }
@@ -990,7 +880,8 @@ QString ejecuta_visitor::visit_parametro1(produccion_parametro1 *pd)
 }
 
 QString ejecuta_visitor::visit_declaracion_metodo1(produccion_declaracion_metodo1 *pd)
-{        
+{
+    QString n=pd->iden->accept(this);
     return"";
 }
 
@@ -1006,44 +897,17 @@ QString ejecuta_visitor::visit_declaracion_metodo3(produccion_declaracion_metodo
     return"";
 }
 
-void ejecuta_visitor::copia_ambito(tabla_simbolos *padre, tabla_simbolos *hijo){
-    QHash<QString,simbolo*>::iterator i;
-    for(i=padre->begin(); i!=padre->end();i++){
-        QString llave =i.key();
-        simbolo * s = *i;
-        if(s->getId()!="metodo"&&s->getId()!="lienzo"){
-          hijo->insert(llave,*i);
-        }
-    }
-}
-
-simbolo *ejecuta_visitor::get_ambito_padre(QLinkedList<simbolo *> *ambitos){
-
-    QLinkedList<simbolo*>::iterator i;
-    for (i=ambitos->begin(); i!=ambitos->end(); i++){
-        simbolo*s = *i;
-        if(s->getId()=="lienzo"){
-            lienzo* l = (lienzo*)s;
-            return l;
-        }
-    }
-    return NULL;
-}
-
 QString ejecuta_visitor::visit_declaracion_metodo4(produccion_declaracion_metodo4 *pd)
-{  //visita metodo principal o delcaracion de metodo
-    I_need_identifer="si";
+{    
     QString n=pd->iden->accept(this);
-    I_need_identifer="no";
-    if(n=="principal"){//el ambito padre ya e
-        declaracion_metodo*m=(declaracion_metodo*)ambitos->first();//tabla del principal--posible error de conversion verificar
-        lienzo*l=(lienzo*)get_ambito_padre(ambitos);
-        copia_ambito(l->ts,m->ts);
-        pd->pl->accept(this);
-    }else{
-
+    if(n=="principal"){
+        tabla_simbolos*t=ambitos->first();
+        declaracion_metodo*m=(declaracion_metodo*)t->value(n);
+        //ts=m->ts;
+        produccion_declaracion_metodo4*pm=(produccion_declaracion_metodo4*)m->metodo;
+        pm->pl->accept(this);
     }
-    //pd->pl->accept(this);
+    pd->pl->accept(this);
     return"";
 }
 
@@ -1057,115 +921,11 @@ return"";
     return"";
 }
 
-
- tabla_simbolos* ejecuta_visitor::get_tabla_temporal(){
-     simbolo *s = ambitos->first();
-     declaracion_metodo *m ;
-     lienzo *l;
-     tabla_simbolos *temp;
-     if(s->getId()=="metodo"){
-         m=(declaracion_metodo*)s;
-      return   temp=m->ts;
-     }else if(s->getId()=="lienzo"){
-         l=(lienzo*)s;
-      return   temp=l->ts;
-     }
- }
-
  QString ejecuta_visitor::visit_declarador_1(produccion_declarador_1*pd){
-    tabla_simbolos*temp = get_tabla_temporal();
-    if(temp->contains(pd->iden)&& I_need_identifer!="si"){
-        variable *v = (variable*)temp->value(pd->iden);
-        return v->valor;
-    }/*else if(true){ esto para ver lo de herencia
-
-    }*/
     return pd->iden;
 }
 
-bool ejecuta_visitor::existe(QString nombre, lienzo *l){
-    bool exist = false;
-    if(l->ts->contains(nombre)){
-        exist =true;
-        return exist;
-    }
-        QLinkedList<heredados*>::iterator i;
-        for(i=lista->begin(); i!=lista->end(); i++){
-            lienzo * actual;
-            heredados * h =(heredados*)(*i);
-            actual = (lienzo*)h->padre;
-            if(actual->ts->contains(nombre)==true){
-                exist = true;
-                return exist;
-            }
-        }
-    return exist;
-}
-
-QString ejecuta_visitor::visit_expresion_llamada(expresion_llamada_metodo *pd){
-     //esta es la expresion llamada
-     if(es_llamada=="no"){
-         es_llamada="si";
-     }else if(es_llamada=="si"){
-         QString id =pd->iden;//ide del metodo llamado
-         QString tam =pd->lista->accept(this);//valores a enviar al metodo;
-         QStringList can;
-         int t=0;
-         if(tam.contains(",")==true){
-            can=tam.split(",");
-            t=can.count();//t sirve para la cantidad de parametros a enviar al metodo
-
-        }else if(tam==""){
-            t=0;
-        }else{
-            t=1;
-         }
-        lienzo*l = (lienzo*)get_ambito_padre(ambitos);//esta linea todavia existe puedo ejecutar
-        if(existe(id,l)==true){
-              //operar tengo que meter este ambito en la pila de ambitos si no error
-              declaracion_metodo * m_ejecutar = get_metodos_sobre_cargados(l->ts,id,t,l);//metodo que tengo que ejecutar
-              if(m_ejecutar==NULL){
-                  return "error este metodo no ha sido declarado o no tiene sobrecarga valida";
-              }
-              declaracion_metodo * primero_ambito;
-              if(ambitos->first()->getId()=="metodo"){
-                  primero_ambito=(declaracion_metodo*)ambitos->first();
-                  //llamada recursiva ¿?
-                  if(primero_ambito->id==m_ejecutar->id){
-                      //es llamada recursiva
-                      ambitos->takeFirst();
-                      QString e = asigna_parametros(m_ejecutar->parametros,can);
-                      copia_parametros(m_ejecutar->ts,m_ejecutar->parametros);
-                      ambitos->prepend(m_ejecutar);
-                      if(e!="error de tipos"){
-                       m_ejecutar->instrucciones->accept(this);
-                      }
-
-                  }else{
-                      //es otro metodo
-                      QString e = asigna_parametros(m_ejecutar->parametros,can);
-                      copia_parametros(m_ejecutar->ts,m_ejecutar->parametros);
-                      copia_ambito(l->ts,m_ejecutar->ts);
-                      ambitos->prepend(m_ejecutar);
-                      if(e!="error de tipos"){
-                       m_ejecutar->instrucciones->accept(this);
-                      }
-                      ambitos->takeFirst();
-                  }
-
-              }else{
-                  return "";//es probable que no entre nunca en este else pero es por seguridad; seria un grave error que entrara
-              }
-
-          }else{
-              return "error este metodo no ha sido declarado";
-          }
-
-     }
-     return "";
-}
-
-QString ejecuta_visitor::visit_declarador_2(produccion_declarador_2*pd){
+ QString ejecuta_visitor::visit_declarador_2(produccion_declarador_2*pd){
     return pd->iden;
 }
 

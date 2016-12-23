@@ -3,7 +3,7 @@
 #include"produccion_lista_parametros.h"
 class produccion_lista_parametros3:public produccion_lista_parametros
 {
-public:
+public:    
     produccion_lista_parametros3();
     virtual QString accept(visitor *v);
 };

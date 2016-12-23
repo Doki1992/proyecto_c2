@@ -1,8 +1,9 @@
 #include "produccion_declaracion_variable6.h"
 #include "visitor.h"
 produccion_declaracion_variable6::produccion_declaracion_variable6(produccion_tipo*tipo,
-produccion_lista_nombre *nombre)
+produccion_lista_nombre *nombre,QString fila)
 {
+    this->fila=fila;
     this->nombre=nombre;
     this->tipo=tipo;
 }

@@ -125,7 +125,6 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE YYSTYPE;
 #include "expresion_diferente.h"
-#include "expresion_llamada_metodo.h"
 #include "expresion_vector.h"
 #include "expresion_y.h"
 #include "expresion_epsilon.h"
@@ -236,6 +235,8 @@ typedef union YYSTYPE YYSTYPE;
 #include"produccion_declaracion_metodo4.h"
 #include"produccion_lista_expresion1.h"
 #include"produccion_lista_expresion2.h"
+#include"token_error.h"
+#include<QLinkedList>
 
 union YYSTYPE
 {

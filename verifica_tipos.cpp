@@ -8,8 +8,20 @@ verifica_tipos::verifica_tipos()
 }
 
 QString verifica_tipos::verifica_tipo(QString valor,QString valor2)
-{
-    if(check_bool(valor)=="bool" && check_bool(valor2)=="bool"){
+{    
+    if(check_char(valor)=="char" && check_bool(valor2)=="bool"){
+        return "error char-bool";
+    }else if(check_bool(valor)=="bool" && check_char(valor2)=="char"){
+        return "error bool-char";
+    }else if(check_entero(valor)=="entero" && check_char(valor2)=="char"){
+         return "entero-char";
+    }else if(check_char(valor)=="char" && check_entero(valor2)=="entero"){
+         return "char-entero";
+    }else if(check_doble(valor)=="doble" && check_char(valor2)=="char"){
+        return "doble-char";
+    }else if(check_char(valor)=="char" && check_doble(valor2)=="doble"){
+        return "char-doble";
+    }else if(check_bool(valor)=="bool" && check_bool(valor2)=="bool"){
         return "bool-bool"   ;//yaaaaaaaaaaaaaaaaa
     }else if(check_bool(valor)=="bool" && check_entero(valor2)=="entero"){
         return "bool-entero";//yaaaaaaaaaaaaaaaaa
@@ -51,6 +63,16 @@ QString verifica_tipos::check_bool(QString v)
 {
     if(v=="true" || v=="false"){
         return "bool";
+    }else{
+        return check_entero(v);
+    }
+
+}
+
+QString verifica_tipos::check_char(QString v)
+{
+    if(v.contains("'")==true){
+        return "char";
     }else{
         return check_entero(v);
     }
@@ -147,7 +169,16 @@ QString verifica_tipos::obtener_valor_booleano(QString v1)
     }else if(v1=="false"){
         return "0";
     }else{
-        return v1;
+        if(v1.contains("'")){
+            QString temp=v1.remove('\'');            
+            return temp;
+        }else if(v1.contains("\"")){
+            QString temp=v1.remove('\"');
+            return temp;
+        }else{
+            return v1;
+        }
+
     }
 }
 

@@ -6,9 +6,10 @@
 class produccion_lista_asignacion2:public produccion_lista_asignacion
 {
 public:
+    QString fila;
     produccion_expresion*pe;
      declarador*iden;
-    produccion_lista_asignacion2(declarador* iden,produccion_expresion*pe);
+    produccion_lista_asignacion2(declarador* iden,produccion_expresion*pe,QString fila);
     virtual QString accept(visitor *v);
 };
 

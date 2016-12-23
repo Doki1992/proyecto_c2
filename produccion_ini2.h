@@ -6,8 +6,9 @@
 class produccion_ini2:public produccion_ini
 {
 public:
+    QString fila;
     produccion_lienzo*pl;
-    produccion_ini2(produccion_lienzo*pl);
+    produccion_ini2(produccion_lienzo*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 

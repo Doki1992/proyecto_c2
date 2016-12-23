@@ -5,8 +5,9 @@
 class produccion_extiende1:public produccion_extiende
 {
 public:
+    QString fila;
     produccion_lista_nombre*pl;
-    produccion_extiende1(produccion_lista_nombre*pl);
+    produccion_extiende1(produccion_lista_nombre*pl, QString fila);
     virtual QString accept(visitor *v);
 };
 

@@ -7,9 +7,10 @@ class produccion_lienzo3:public produccion_lienzo
 {
 public:
     QString iden;
+    QString fila;
     produccion_extiende*pe;
     produccion_lista_instrucciones*pl;
-    produccion_lienzo3(QString iden,produccion_extiende*pe,produccion_lista_instrucciones*pl);
+    produccion_lienzo3(QString iden,produccion_extiende*pe,produccion_lista_instrucciones*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 

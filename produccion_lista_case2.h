@@ -7,8 +7,9 @@ class produccion_lista_case2:public produccion_lista_case
 {
 public:
     produccion_expresion*pe;
+    QString fila;
     produccion_lista_instrucciones*pi;
-    produccion_lista_case2(produccion_expresion*pe,produccion_lista_instrucciones*pi);
+    produccion_lista_case2(produccion_expresion*pe,produccion_lista_instrucciones*pi,QString fila);
     virtual QString accept(visitor *v);
 };
 

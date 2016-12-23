@@ -1,7 +1,8 @@
 #include "produccion_lista_instrucciones2.h"
 #include"visitor.h"
-produccion_lista_instrucciones2::produccion_lista_instrucciones2(produccion_instruccion *pi)
+produccion_lista_instrucciones2::produccion_lista_instrucciones2(produccion_instruccion *pi, QString fila)
 {
+    this->fila=fila;
     this->pi=pi;
 }
 

@@ -1,7 +1,8 @@
 #include "produccion_declaracion_variable1.h"
 #include"visitor.h"
-produccion_declaracion_variable1::produccion_declaracion_variable1(produccion_tipo *pt, produccion_lista_nombre *pl)
+produccion_declaracion_variable1::produccion_declaracion_variable1(produccion_tipo *pt, produccion_lista_nombre *pl, QString fila)
 {
+    this->fila=fila;
     this->pt=pt;
     this->pl=pl;
 }

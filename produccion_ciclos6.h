@@ -6,9 +6,10 @@
 class produccion_ciclos6:public produccion_ciclos
 {
 public:
+    QString fila;
     produccion_expresion*pe;
     produccion_lista_case*pl;
-    produccion_ciclos6(produccion_expresion*pe,produccion_lista_case*pl);
+    produccion_ciclos6(produccion_expresion*pe,produccion_lista_case*pl,QString fila);
     virtual QString accept(visitor *v);
 };
 
